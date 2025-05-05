@@ -1,0 +1,45 @@
+<!--The stimulus data is left in the drop down menu. Add the data controller actions-->
+<!-- //? Sticky Top Navbar -->
+<div class="fixed top-0 z-50 w-full" data-controller="navbar">
+  <nav class="relative flex justify-center items-center p-4 h-12 w-full bg-zinc-800">
+    <div class="flex justify-evenly items-center w-full lg:max-w-4xl">
+      <!-- //? Left section links home -->
+      <div class="flex justify-center items-center ms-4">
+        <%= link_to root_path do %>
+          <span class="w-1/2 md:w-4/6 lg:w-full kodchasan-bold text-3xl text-lime-400">Music Found</span>
+        <% end %>
+      </div>
+      <!-- //? Right section Page Links -->
+      <div class="flex flex-grow justify-end items-center me-4">
+        <ul class="flex space-x-4 kodchasan-regular text-zinc-100">
+          <li class="hidden md:flex"><%= link_to "Dev3027", root_path %></li>
+          <li class="hidden md:flex">
+            <% if admin_signed_in? %>
+              <%= button_to "Logout", destroy_admin_session_path, class: "cursor-pointer", method: :delete %>
+            <% else %>
+              <%= link_to new_admin_session_path do %>
+                <svg class="w-6 h-6 text-zinc-100" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                  <path fill-rule="evenodd" d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z" clip-rule="evenodd"/>
+                </svg>
+              <% end %>
+            <% end %>
+          </li>
+        </ul>
+        <button class="md:hidden pb-1 w-6" role="button" aria-label="menu" data-action="click->navbar#toggleMenu">&#9776</button>
+      </div>
+    </div>
+  </nav>
+  <!-- //? Dropdown menu - mobile -->
+  <nav class="hidden bg-zinc-800 text-gray-100 absolute w-2/3 right-0 overflow-y-auto rounded-b-md" data-navbar-target="mobileMenu">
+    <ul class="flex flex-col py-2 px-3 kodchasan-regular">
+      <%= link_to root_path do %>
+        <li class="flex border p-2 my-1 rounded-md">Dev3027</li>
+      <% end %>
+      <%= link_to root_path do %>
+        <svg class="w-6 h-6 text-zinc-100" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+          <path fill-rule="evenodd" d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z" clip-rule="evenodd"/>
+        </svg>
+      <% end %>
+    </ul>
+  </nav>
+</div>

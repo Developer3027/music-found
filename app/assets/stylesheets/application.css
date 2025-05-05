@@ -1,0 +1,124 @@
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+ @import url('https://fonts.googleapis.com/css2?family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+  button {
+    cursor: pointer;
+  }
+
+  .transition-none {
+    transition: none !important;
+  }
+  
+  [data-music--player-target="loadingProgress"] {
+    transition: width 0.3s ease-out;
+  }
+
+  /* app/assets/stylesheets/application.css */
+  [data-music--player-target="currentTime"],
+  [data-music--player-target="duration"] {
+    font-variant-numeric: tabular-nums; /* Ensures consistent width for numbers */
+    min-width: 3.5rem; /* Prevents layout shift */
+  }
+
+ .kodchasan-extralight {
+  font-family: "Kodchasan", serif;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.kodchasan-light {
+  font-family: "Kodchasan", serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.kodchasan-regular {
+  font-family: "Kodchasan", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.kodchasan-medium {
+  font-family: "Kodchasan", serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.kodchasan-semibold {
+  font-family: "Kodchasan", serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.kodchasan-bold {
+  font-family: "Kodchasan", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.kodchasan-extralight-italic {
+  font-family: "Kodchasan", serif;
+  font-weight: 200;
+  font-style: italic;
+}
+
+.kodchasan-light-italic {
+  font-family: "Kodchasan", serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.kodchasan-regular-italic {
+  font-family: "Kodchasan", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.kodchasan-medium-italic {
+  font-family: "Kodchasan", serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.kodchasan-semibold-italic {
+  font-family: "Kodchasan", serif;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.kodchasan-bold-italic {
+  font-family: "Kodchasan", serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.flash {
+  padding: 15px;
+  margin-bottom: 10px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  opacity: 1;
+  transition: opacity 1s ease-out;
+}
+
+.flash-notice {
+  color: #D4E157;
+  background-color: #334155;
+  border-color: #d6e9c6;
+}
+
+.flash-alert {
+  color: #fc5a58;
+  background-color: #334155;
+  border-color: #ebccd1;
+}
+

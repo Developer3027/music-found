@@ -1,0 +1,11 @@
+<% if notice %>
+  <div class="flash flash-notice mt-14 text-center w-full" data-controller="flash" data-action="animationend->flash#remove">
+    <%= notice %>
+  </div>
+<% end %>
+
+<% if alert %>
+  <div class="flash flash-alert mt-14 text-center w-full" data-controller="flash" data-action="animationend->flash#remove">
+    <%= alert %>
+  </div>
+<% end %>

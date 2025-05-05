@@ -1,0 +1,156 @@
+import { Controller } from "@hotwired/stimulus"
+import { post } from "@rails/request.js"
+import WaveSurfer from "wavesurfer.js"
+
+export default class extends Controller {
+  static targets = [ "playIcon", "pauseIcon" ]
+  static values = { url: String, audioPlayerUrl: String, songId: String }
+
+  connect() {
+    // Store play and pause icons globally
+    window.playIcon = this.playIconTarget;
+    window.pauseIcon = this.pauseIconTarget;
+
+    // Sync the button state with the current playback state
+    this.updateButtonState();
+  }
+
+  initializeWavesurfer() {
+    console.log("Initializing Wavesurfer...");
+    const audioPlayer = document.getElementById("audio-player");
+    if (!audioPlayer) {
+      console.error("Audio player not found");
+      return;
+    }
+
+    const waveformContainer = document.getElementById("waveform");
+    if (!waveformContainer) {
+      console.error("Waveform container not found");
+      return;
+    }
+
+    // Destroy existing Wavesurfer instance if it exists
+    if (this.wavesurfer) {
+      this.wavesurfer.destroy();
+      this.wavesurfer = null;
+    }
+
+    // Initialize Wavesurfer.js
+    this.wavesurfer = WaveSurfer.create({
+      container: waveformContainer,
+      waveColor: "#00B1D1",
+      progressColor: "#01DFB6",
+      height: 50,
+      width: 300,
+      minPxPerSec: 50,
+      hideScrollbar: true,
+      autoScroll: true,
+      autoCenter: true,
+      dragToSeek: true,
+      barWidth: 2,
+      barGap: 1,
+      barRadius: 2,
+      url: this.urlValue
+    });
+
+    // Handle play/pause events to toggle button visibility
+    this.wavesurfer.on('play', () => {
+      if (this.playIcon && this.pauseIcon) {
+        this.playIcon.classList.add("hidden");
+        this.pauseIcon.classList.remove("hidden");
+      }
+    });
+
+    this.wavesurfer.on('pause', () => {
+      if (this.playIcon && this.pauseIcon) {
+        this.playIcon.classList.remove("hidden");
+        this.pauseIcon.classList.add("hidden");
+      }
+    });
+
+    // Pause other songs when this one starts playing
+    this.wavesurfer.on('play', () => {
+      console.log("url: ", this.urlValue);
+      this.dispatchEvent(new CustomEvent('audio-player-switched', {
+        detail: { audio_src: this.urlValue, song_id: this.songIdValue }
+      }));
+    });
+
+    // Handle errors during loading or playback
+    this.wavesurfer.on('error', (error) => {
+      console.error("WaveSurfer error:", error);
+    });
+  }
+
+  disconnect() {
+    // Clean up Wavesurfer.js when the controller is disconnected
+    if (this.wavesurfer) {
+      this.wavesurfer.destroy();
+      this.wavesurfer = null;
+    }
+  }
+
+  async toggle(e) {
+    e.preventDefault();
+
+    // Update the audio player via Turbo Streams
+    await this.updateAudioPlayer();
+
+    // Initialize Wavesurfer after the Turbo Stream update
+    this.initializeWavesurferAfterUpdate();
+  }
+
+  async updateAudioPlayer() {
+    const response = await post(this.audioPlayerUrlValue, {
+      responseKind: "turbo-stream"
+    });
+    if (response.ok) {
+      console.log("Audio player updated successfully");
+      console.log("url: ", this.urlValue)
+      // Initialize Wavesurfer after the Turbo Stream update
+      this.initializeWavesurfer();
+    } else {
+      console.error("Failed to update audio player");
+    }
+  }
+
+  initializeWavesurferAfterUpdate() {
+    // Listen for the Turbo Stream render event
+    document.addEventListener("turbo:frame-render", () => {
+      const audioPlayer = document.getElementById("waveform");
+      if (audioPlayer) {
+        console.log("Audio player found, initializing Wavesurfer...");
+        
+      }
+    }, { once: true }); // Use { once: true } to ensure the listener is removed after execution
+  }
+
+  audioChanged(e) {
+    const newUrl = e.detail.audio_src;
+    const newSongId = e.detail.song_id;
+
+    // If another song is playing, pause this one and reset its buttons
+    if (newUrl !== this.urlValue || newSongId !== this.songIdValue) {
+      if (this.wavesurfer?.isPlaying()) {
+        this.wavesurfer.pause();
+      }
+      this.updateButtonState();
+    }
+  }
+
+  updateButtonState() {
+    if (this.currentSongId === this.songIdValue) {
+      if (this.wavesurfer?.isPlaying()) {
+        this.playIcon?.classList.add("hidden");
+        this.pauseIcon?.classList.remove("hidden");
+      } else {
+        this.playIcon?.classList.remove("hidden");
+        this.pauseIcon?.classList.add("hidden");
+      }
+    } else {
+      // Reset the state for non-active play buttons
+      this.playIcon?.classList.remove("hidden");
+      this.pauseIcon?.classList.add("hidden");
+    }
+  }
+}

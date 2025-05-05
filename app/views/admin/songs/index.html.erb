@@ -1,0 +1,25 @@
+<section class="flex flex-col justify-center items-center text-zinc-50 w-full mt-14">
+    <div class="flex justify-between items-center max-w-4xl w-full p-4">
+      <h1 class="text-3xl text-left my-2">Songs</h1>
+      <%= link_to "Add New Song", new_admin_song_path, class: "h-fit w-fit border border-blue-400 rounded-md px-4 py-1" %>
+    </div>
+  <div class="flex flex-wrap justify-center items-center">
+    <% @songs.each do |song| %>
+
+
+      <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 m-2">
+          <a href="#">
+              <img class="rounded-t-lg w-48" src="<%= song.song_image_url %>" alt="" if song.song_image.present? />
+          </a>
+          <div class="p-2">
+              <a href="#">
+                <p class="mb-1 text-md font-bold tracking-tight text-gray-400">
+                  <%= song.title %>
+                </p>
+              </a>
+          </div>
+      </div>
+
+    <% end %>
+  </div>
+</section>

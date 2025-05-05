@@ -1,0 +1,32 @@
+<section class="flex flex-col justify-center items-center w-full text-zinc-50 mt-14">
+  <h1 class="text-2xl font-bold my-2">Admin Dashboard</h1>
+  <div class="flex justify-evenly items-start max-w-4xl w-full">
+    <!-- Left column small song cards -->
+    <div class="flex flex-col text-zinc-50 w-1/2">
+      <% @songs.each do |song| %>
+      <div class="flex justify-evenly items-center overflow-hidden border border-zinc-600 rounded-sm m-2 w-72">
+        <%= image_tag song.song_image, class: "w-12 me-2" %>
+        <span class="w-40"><%= song.title %></span>
+        <!-- Play -->
+        <div>
+          <%= render partial: "shared/preview", locals: { controller_name: "preview", song: song } %>
+        </div>
+        <!-- Menu -->
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 me-2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+          </svg>
+        </div>
+      </div>
+      <% end %>
+    </div>
+    <div class="bg-zinc-800 w-1/2 my-2 rounded-sm p-2">
+      <div class="flex justify-around items-center w-full my-2">
+        <%= link_to "Add Song", new_admin_song_path, class: "flex justify-center items-center border border-pill-blue h-fit w-fit rounded-md px-4 py-1" %>
+        <%= link_to "List Songs", admin_songs_path, class: "flex justify-center items-center border border-pill-blue h-fit w-fit rounded-md px-4 py-1" %>
+      </div>
+      <p><%= pluralize(@song_count, 'song') %> stored.</p>
+      <p>Top played song:</p>
+    </div>
+  </div>
+</section>

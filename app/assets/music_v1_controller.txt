@@ -1,0 +1,168 @@
+import { Controller } from "@hotwired/stimulus";
+import WaveSurfer from 'wavesurfer.js';
+
+export default class extends Controller {
+  static targets = ["playButton", "pauseButton"]
+  static values = { url: String }
+
+  initialize() {
+    if (!window.audioPlayer) {
+      this.setupWaveSurfer();
+    }
+  }
+
+  setupWaveSurfer() {
+    window.audioPlayer = {
+      wavesurfer: WaveSurfer.create({
+        container: '#waveform',
+        waveColor: "#00B1D1",
+        progressColor: "#01DFB6",
+        height: 50,
+        minPxPerSec: 50,
+        hideScrollbar: true,
+        autoScroll: true,
+        autoCenter: true,
+        dragToSeek: true,
+        barWidth: 2,
+        barGap: 1,
+        barRadius: 2,
+        responsive: true
+      }),
+      currentTrack: null,
+      isLoading: false
+    };
+
+    const ws = window.audioPlayer.wavesurfer;
+
+    ws.on('ready', () => {
+      window.audioPlayer.isLoading = false;
+      document.getElementById('player-play-button').classList.add('hidden');
+      document.getElementById('player-pause-button').classList.remove('hidden');
+      document.getElementById('loading-indicator').classList.add('hidden');
+      this.hideLoadingIndicator();
+      ws.play();
+    });
+
+    ws.on('finish', () => {
+      this.togglePlayerButtons(false);
+      this.toggleAllSongButtons(false);
+    });
+
+    ws.on('pause', () => {
+      this.togglePlayerButtons(false);
+      this.toggleAllSongButtons(false);
+    });
+
+    ws.on('play', () => {
+      this.togglePlayerButtons(true);
+      // Only toggle the current song's buttons to play state
+      const currentSongElement = document.querySelector(`[data-music-url-value="${window.audioPlayer.currentTrack}"]`);
+      if (currentSongElement) {
+        currentSongElement.querySelector('.song-play-button').classList.add('hidden');
+        currentSongElement.querySelector('.song-pause-button').classList.remove('hidden');
+      }
+    });
+
+    ws.on('loading', (progress) => {
+      if (progress === 100) {
+        // Loading complete, but not ready yet
+        this.updateLoadingProgress(progress);
+      } else {
+        this.showLoadingIndicator();
+        this.updateLoadingProgress(progress);
+      }
+    });
+
+    ws.on('error', (error) => {
+      console.error('WaveSurfer error:', error);
+      window.audioPlayer.isLoading = false;
+      this.hideLoadingIndicator();
+    });
+  }
+
+  // Add these new methods to the controller:
+  showLoadingIndicator() {
+    const indicator = document.getElementById('loading-indicator');
+    if (indicator) {
+      indicator.classList.remove('hidden');
+      indicator.style.display = 'flex'; // Ensure it's visible
+    }
+  }
+
+  hideLoadingIndicator() {
+    const indicator = document.getElementById('loading-indicator');
+    if (indicator) {
+      indicator.classList.add('hidden');
+      this.resetLoadingProgress();
+    }
+  }
+
+  updateLoadingProgress(progress) {
+    const progressBar = document.getElementById('loading-progress');
+    if (progressBar) {
+      progressBar.style.width = `${progress}%`;
+    }
+  }
+
+  resetLoadingProgress() {
+    const progressBar = document.getElementById('loading-progress');
+    if (progressBar) {
+      progressBar.style.width = '0%';
+    }
+  }
+
+  togglePlayerButtons(isPlaying) {
+    if (isPlaying) {
+      document.getElementById('player-play-button').classList.add('hidden');
+      document.getElementById('player-pause-button').classList.remove('hidden');
+    } else {
+      document.getElementById('player-play-button').classList.remove('hidden');
+      document.getElementById('player-pause-button').classList.add('hidden');
+    }
+  }
+
+  toggleAllSongButtons(isPlaying) {
+    document.querySelectorAll('.song-play-button').forEach(btn => {
+      btn.classList.toggle('hidden', isPlaying);
+    });
+    document.querySelectorAll('.song-pause-button').forEach(btn => {
+      btn.classList.toggle('hidden', !isPlaying);
+    });
+  }
+
+  play(e) {
+    e.preventDefault();
+    
+    if (window.audioPlayer.isLoading) return;
+
+    const ws = window.audioPlayer.wavesurfer;
+    
+    if (window.audioPlayer.currentTrack !== this.urlValue) {
+      window.audioPlayer.currentTrack = this.urlValue;
+      window.audioPlayer.isLoading = true;
+      
+      document.getElementById('now-playing').textContent = this.element.dataset.songTitle || 'Unknown Track';
+      document.getElementById('artist-name').textContent = this.element.dataset.songArtist || 'Unknown Artist';
+      document.getElementById('loading-indicator').classList.remove('hidden');
+      
+      this.togglePlayerButtons(false);
+      // Toggle all song buttons to initial state
+      this.toggleAllSongButtons(false);
+
+      
+      ws.load(this.urlValue);
+    } else {
+      ws.playPause();
+    }
+  }
+
+  // handle player controls
+  playerControl(e) {
+    e.preventDefault();
+    const ws = window.audioPlayer.wavesurfer;
+    
+    if (!window.audioPlayer.currentTrack) return;
+    
+    ws.playPause();
+  }
+}
