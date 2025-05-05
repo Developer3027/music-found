@@ -7,10 +7,10 @@ This has been a idea for some time that is finally getting some traction. It is 
 This app is built on Rails using a PostgreSQL database. The large image and audio files are stored in a S3 bucket. This allows me to host it on Heroku for under $20 a month while having access to those files. The player uses the [WaveSurfer](https://wavesurfer.xyz/examples/?basic.js) javascript library through the Rails Stimulus system. It takes into account that the player is working with S3.
 
 ## Home Screen
-![app index](Screenshot from 2025-04-25 16-23-40)
+![app index](./public/Screenshot%20from%202025-04-25%2016-23-40.png)
 
 ## Player Screen
-![Player](Screenshot from 2025-05-01 11-53-09)
+![Player](./public/Screenshot%20from%202025-05-01%2011-53-09.png)
 
 Things you may want to cover:
 
