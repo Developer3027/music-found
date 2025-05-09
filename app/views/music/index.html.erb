@@ -1,52 +1,24 @@
-<section class="mt-14 text-zinc-100 kodchasan-regular pb-16">
-  <div class="flex flex-wrap justify-center items-center min-h-screen">
-    <% @songs.each do |song| %>
-      <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 m-2">
-          <a href="#">
-              <img class="rounded-t-lg w-48" src="<%= song.song_image_url %>" alt="" if song.song_image.present? />
-          </a>
-          <div class="flex justify-between item-center p-2">
-              <a href="#">
-                <p class="mb-1 text-sm font-bold tracking-tight text-gray-400">
-                  <%= song.title %>
-                </p>
-              </a>
+<section class="text-zinc-100 flex min-h-screen">
+  <!-- Sidebar (fixed width) -->
+  <%= render partial: "shared/sidebar" %>
+
+  <!-- Main Content Area (flexible width) -->
+  <div class="flex-1 overflow-y-auto bg-[linear-gradient(to_bottom,#856144_0%,#856144_40%,#7D6757_60%,#6C747C_80%,#D9D9D9_100%)] min-h-screen">
+    <!-- Turbo Frame Target -->
+    <turbo-frame id="music-frame" class="w-full">
+      <%= render partial: "shared/music_player" %>
+      <!-- Current Index Content -->
+      <div class="w-full flex flex-col m-auto  text-[#1E1E1E]">
+        <h2 class="kanit font-medium mx-4 py-2">Random Songs</h2>
+        <hr class="mb-3 mx-4">
+        <div class="flex flex-wrap justify-center items-start p-4 gap-4">
+          <% @songs.each do |song| %>
+            <div class="m-auto">
               <%= render partial: "song", locals: { controller_name: "music", song: song } %>
-              <%= song.id %>
-          </div>
+            </div>
+          <% end %>
+        </div>
       </div>
-    <% end %>
+    </turbo-frame>
   </div>
 </section>
-<div data-controller="music--player" class="fixed flex justify-center items-center bottom-0 left-0 right-0 bg-black text-white p-4">
-  <div class="flex flex-col">
-    <div data-music--player-target="nowPlaying">No song selected</div>
-    <div data-music--player-target="artistName">No artist selected</div>
-  </div>
-  <!-- Current time -->
-  <div data-music--player-target="currentTime" class="mx-2">0:00</div>
-  <div class="flex flex-col w-1/2">
-    <div data-music--player-target="waveform" class="mx-2 px-2"></div>
-    <div data-music--player-target="loadingContainer" class="hidden h-1 bg-gray-700 relative">
-      <div data-music--player-target="loadingProgress" 
-          class="absolute top-0 left-0 h-full bg-lime-500 transition-all duration-300"
-          style="width: 0%"></div>
-    </div>
-  </div>
-  <!-- Duration (updates when loaded) -->
-  <div data-music--player-target="duration" class="mx-2">0:00</div>
-  <button data-music--player-target="playerPlayButton"
-          data-action="click->music--player#togglePlayback">
-    <svg class="w-10 h-10 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24" data-music-target="playIcon">
-      <path fill-rule="evenodd" d="M8.6 5.2A1 1 0 0 0 7 6v12a1 1 0 0 0 1.6.8l8-6a1 1 0 0 0 0-1.6l-8-6Z" clip-rule="evenodd"/>
-    </svg>
-  </button>
-  
-  <button data-music--player-target="playerPauseButton"
-          class="hidden"
-          data-action="click->music--player#togglePlayback">
-    <svg class="w-10 h-10 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24" data-music-target="pauseIcon">
-      <path fill-rule="evenodd" d="M8 5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H8Zm7 0a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1Z" clip-rule="evenodd"/>
-    </svg>
-  </button>
-</div>

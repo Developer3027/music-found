@@ -1,0 +1,17 @@
+<%= turbo_frame_tag "music-frame" do %>
+  <%= render partial: "shared/music_player" %>
+    <div class="w-full flex flex-col m-auto  text-[#1E1E1E]">
+      <h2 class="kanit font-medium mx-4 py-2">Playlists</h2>
+      <hr class="mb-3 mx-4">
+      <div class="flex flex-col px-4">
+        <% @playlists.each do |playlist| %>
+          <span><%= playlist.name %></span>
+          <div class="flex">
+            <% playlist.songs.each do |song| %>
+              <%= render partial: "song", locals: { controller_name: "music", song: song } %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+<% end %>

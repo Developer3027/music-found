@@ -15,14 +15,15 @@ export default class extends Controller {
 
   static targets = [
     "playButton",    // ▶ Play button (visible by default)
-    "refreshButton"  // 🔄 Refresh/loading button (hidden by default)
+    //"refreshButton"  // 🔄 Refresh/loading button (hidden by default)
   ]
 
   static values = {
     url: String,    // Audio file URL (required)
     id: String,     // Unique song identifier (future-proofing)
     title: String,  // Track title for display
-    artist: String  // Artist name for display
+    artist: String,  // Artist name for display
+    banner: String // Banner art for artist
   }
 
   // ========================
@@ -64,7 +65,7 @@ export default class extends Controller {
    */
   play(e) {
     e.preventDefault()
-
+    console.log("Song: Image, image, where did I put you?")
     try {
       // Notify global player to load this track
       window.dispatchEvent(new CustomEvent('audio:play', {
@@ -72,7 +73,7 @@ export default class extends Controller {
           url: this.urlValue,
           title: this.titleValue || 'Unknown Track',
           artist: this.artistValue || 'Unknown Artist',
-          id: this.idValue
+          banner: this.bannerValue || 'music_files/home-banner.jpg'
         }
       }))
 
@@ -107,16 +108,18 @@ export default class extends Controller {
    * Show refresh state (loading/playing)
    */
   showRefreshState() {
-    this.playButtonTarget.classList.add('hidden')
-    this.refreshButtonTarget.classList.remove('hidden')
+    this.playButtonTarget.classList.add('border-lime-500')
+    this.playButtonTarget.classList.remove('border-gray-200')
+    //this.refreshButtonTarget.classList.remove('hidden')
   }
 
   /**
    * Reset to default play button state
    */
   resetIcons() {
-    this.playButtonTarget.classList.remove('hidden')
-    this.refreshButtonTarget.classList.add('hidden')
+    this.playButtonTarget.classList.remove('border-lime-500')
+    this.playButtonTarget.classList.add('border-gray-200')
+    //this.refreshButtonTarget.classList.add('hidden')
   }
 
   // ========================
@@ -127,6 +130,6 @@ export default class extends Controller {
    * Ensure targets exist before manipulation
    */
   get iconsExist() {
-    return this.hasPlayButtonTarget && this.hasRefreshButtonTarget
+    return this.hasPlayButtonTarget //&& this.hasRefreshButtonTarget
   }
 }

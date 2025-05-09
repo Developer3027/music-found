@@ -1,0 +1,7 @@
+<%= turbo_frame_tag "music-frame" do %>
+  <div id="music_frame" class="artists-grid">
+    <% @artists.each do |artist| %>
+      <%= artist.name %>
+    <% end %>
+  </div>
+<% end %>

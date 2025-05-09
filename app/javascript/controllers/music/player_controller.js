@@ -19,10 +19,11 @@ export default class extends Controller {
     "waveform",          // WaveSurfer visualization container
     "playerPlayButton",  // Play button element
     "playerPauseButton", // Pause button element
-    "loadingContainer",  // Loading indicator container
+    //"loadingContainer",  // Loading indicator container
     "loadingProgress",   // Loading progress bar
     "currentTime",       // Current playback time display
-    "duration"           // Duration/countdown display
+    "duration",          // Duration/countdown display
+    "bannerImage",       // Banner image element
   ]
 
   // Current track URL reference
@@ -33,8 +34,21 @@ export default class extends Controller {
    * Sets up WaveSurfer instance and all event listeners
    */
   connect() {
+    // Set default UI state
+    this.resetPlayerUI()
+    
+    // Initialize WaveSurfer but don't load anything
     this.initializeWaveSurfer()
+    
+    // Safe event listener setup
     this.setupEventListeners()
+  }
+  
+  resetPlayerUI() {
+    if (this.hasNowPlayingTarget) this.nowPlayingTarget.textContent = 'Welcome back Dev3027'
+    if (this.hasArtistNameTarget) this.artistNameTarget.textContent = 'Please make me available to everyone.'
+    if (this.hasCurrentTimeTarget) this.currentTimeTarget.textContent = '0:00'
+    if (this.hasDurationTarget) this.durationTarget.textContent = '0:00'
   }
 
   /**
@@ -52,32 +66,39 @@ export default class extends Controller {
   /**
    * Initialize WaveSurfer audio instance
    * Configures visualization and basic event handlers
+   * for the waveform and audio.
    */
   initializeWaveSurfer() {
-    this.wavesurfer = WaveSurfer.create({
-      container: this.waveformTarget,
-      waveColor: "#00B1D1",
-      progressColor: "#01DFB6",
-      height: 50,
-      minPxPerSec: 50,
-      hideScrollbar: true,
-      autoScroll: true,
-      autoCenter: true,
-      dragToSeek: true,
-      barWidth: 2,
-      barGap: 1,
-      barRadius: 2,
-      responsive: true,
-      backend: 'WebAudio' // More reliable than MediaElement
-    })
-
-    this.setupWaveSurferEvents()
+    try {
+      this.wavesurfer = WaveSurfer.create({
+        container: this.waveformTarget,
+        waveColor: "#00B1D1",
+        progressColor: "#01DFB6",
+        height: 50,
+        minPxPerSec: 50,
+        hideScrollbar: true,
+        autoScroll: true,
+        autoCenter: true,
+        dragToSeek: true,
+        barWidth: 2,
+        barGap: 1,
+        barRadius: 2,
+        responsive: true,
+        backend: 'WebAudio' // More reliable than MediaElement
+      })
+      this.setupWaveSurferEvents()
+    } catch (error) {
+      console.error('WaveSurfer initialization failed:', error)
+      // Fallback UI state
+      this.element.classList.add('player-error-state')
+    }
   }
 
   /**
    * Set up all WaveSurfer event listeners
    */
   setupWaveSurferEvents() {
+    
     // Playback state events
     this.wavesurfer.on('ready', this.handleTrackReady.bind(this))
     this.wavesurfer.on('play', this.handlePlay.bind(this))
@@ -96,8 +117,17 @@ export default class extends Controller {
    * Set up custom event listeners
    */
   setupEventListeners() {
-    window.addEventListener('audio:play', this.handlePlayEvent.bind(this))
-    window.addEventListener('audio:pause', this.handlePauseEvent.bind(this))
+    // Use passive listeners where possible
+    const options = { passive: true }
+    
+    // Safely add event listeners
+    if (typeof this.handlePlayEvent === 'function') {
+      window.addEventListener('audio:play', this.handlePlayEvent.bind(this), options)
+    }
+    
+    if (typeof this.handlePauseEvent === 'function') {
+      window.addEventListener('audio:pause', this.handlePauseEvent.bind(this), options)
+    }
   }
 
   // ========================
@@ -164,10 +194,17 @@ export default class extends Controller {
    * @param {Event} e - Custom audio:play event
    */
   handlePlayEvent(e) {
+    console.log('MP: OMG I love this song ', e.detail.title)
     try {
-      const { url, title, artist } = e.detail
+      const { url, title, artist, banner } = e.detail
       this.nowPlayingTarget.textContent = title || 'Unknown Track'
       this.artistNameTarget.textContent = artist || 'Unknown Artist'
+
+      this.updateBanner({
+        // title: title || 'Unknown Track',
+        // artist: artist || 'Unknown Artist',
+        bannerImage: banner || '/home-banner.jpg'
+      })
 
       if (!this.wavesurfer || this.currentUrl !== url) {
         this.currentUrl = url
@@ -186,7 +223,7 @@ export default class extends Controller {
    * @param {number} progress - Loading percentage (0-100)
    */
   handleLoadingProgress(progress) {
-    this.loadingContainerTarget.classList.remove('hidden')
+    //this.loadingContainerTarget.classList.remove('hidden')
     this.loadingProgressTarget.style.width = `${progress}%`
     
     if (progress === 100) {
@@ -298,7 +335,7 @@ export default class extends Controller {
    * Show loading indicator
    */
   showLoadingIndicator() {
-    this.loadingContainerTarget.classList.remove('hidden')
+    //this.loadingContainerTarget.classList.remove('hidden')
     this.loadingProgressTarget.style.width = '0%'
     this.loadingProgressTarget.classList.remove('transition-none')
   }
@@ -307,9 +344,28 @@ export default class extends Controller {
    * Hide loading indicator
    */
   hideLoadingIndicator() {
-    this.loadingContainerTarget.classList.add('hidden')
+    //this.loadingContainerTarget.classList.add('hidden')
     this.loadingProgressTarget.style.width = '0%'
     this.loadingProgressTarget.classList.remove('transition-none')
+  }
+
+  // music--player_controller.js
+  updateBanner(songData) {
+    console.log('MP: Thanks song, got it, showing it.')
+    // Image update
+    this.bannerImageTarget.src = songData.bannerImage || "/home-banner.jpg";
+    
+    // Overlay text
+    //this.bannerTitleTarget.textContent = songData.title;
+    //this.bannerSubtitleTarget.textContent = `${songData.artist} • ${songData.album}`;
+    
+    // Optional: Fade animation
+    if (this.hasBannerImageTarget) {
+      this.bannerImageTarget.style.opacity = 0
+      setTimeout(() => {
+        this.bannerImageTarget.style.opacity = 1
+      }, 50)
+    }
   }
 
   // ========================

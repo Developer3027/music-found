@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+.kanit {
+  font-family: 'Kanit', sans-serif;
+}
+
+[data-music--player-target="bannerImage"] {
+  transition: opacity 0.5s ease-in-out;
+}
