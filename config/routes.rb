@@ -18,6 +18,8 @@ Rails.application.routes.draw do
   get "music/artists", to: "music#artists", as: :music_artists
   get "music/playlists", to: "music#playlists", as: :music_playlists
   get "music/about", to: "music#about", as: :music_about
+  # Add this route for single playlist JSON
+  get "music/playlists/:id", to: "music#playlists", as: :music_playlist
 
   resources :music, only: [ :index ] do
     post "audio-player", to: "music#audio_player", on: :collection

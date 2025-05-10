@@ -1,17 +1,52 @@
 <%= turbo_frame_tag "music-frame" do %>
   <%= render partial: "shared/music_player" %>
-    <div class="w-full flex flex-col m-auto  text-[#1E1E1E]">
-      <h2 class="kanit font-medium mx-4 py-2">Playlists</h2>
-      <hr class="mb-3 mx-4">
-      <div class="flex flex-col px-4">
-        <% @playlists.each do |playlist| %>
-          <span><%= playlist.name %></span>
-          <div class="flex">
-            <% playlist.songs.each do |song| %>
-              <%= render partial: "song", locals: { controller_name: "music", song: song } %>
+  <div class="w-full flex flex-col m-auto text-[#1E1E1E]">
+    <h2 class="kanit font-medium mx-4 py-2">Playlists</h2>
+    <hr class="mb-3 mx-4">
+    <div class="flex flex-col px-4">
+      <% @playlists.each do |playlist| %>
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xl font-bold"><%= playlist.name %></h3>
+            <button 
+              class="px-3 py-1 bg-blue-500 text-white rounded"
+              data-controller="music--playlist"
+              data-action="click->music--playlist#playPlaylist"
+              data-music--playlist-id-value="<%= playlist.id %>"
+            >
+              Play All
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-1 gap-2">
+            <% playlist.playlist_songs.order(:position).each_with_index do |playlist_song, index| %>
+              <div 
+                class="flex items-center p-2 hover:bg-gray-100 rounded"
+                data-controller="music--playlist-song"
+                data-music--playlist-song-url-value="<%= playlist_song.song.song_file_url %>"
+                data-music--playlist-song-title-value="<%= playlist_song.song.title %>"
+                data-music--playlist-song-artist-value="<%= playlist_song.song.artist.name %>"
+                data-music--playlist-song-banner-value="<%= playlist_song.song.song_image_url %>"
+                data-music--playlist-song-playlist-id-value="<%= playlist.id %>"
+                data-music--playlist-song-index-value="<%= index %>"
+              >
+                <span class="text-gray-500 w-8 text-right mr-2"><%= index + 1 %></span>
+                <button 
+                  class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-blue-500"
+                  data-action="click->music--playlist-song#play"
+                >
+                  ▶
+                </button>
+                <div class="ml-2 flex-grow">
+                  <div class="font-medium"><%= playlist_song.song.title %></div>
+                  <div class="text-sm text-gray-500"><%= playlist_song.song.artist.name %></div>
+                </div>
+                <div class="text-sm text-gray-500"><%#= format_duration(playlist_song.song.duration) %></div>
+              </div>
             <% end %>
           </div>
-        <% end %>
-      </div>
+        </div>
+      <% end %>
     </div>
+  </div>
 <% end %>

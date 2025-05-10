@@ -24,10 +24,17 @@ export default class extends Controller {
     "currentTime",       // Current playback time display
     "duration",          // Duration/countdown display
     "bannerImage",       // Banner image element
+    "playlistNextButton",  // Next track button
+    "playlistPrevButton",  // Previous track button
+    "playlistName",       // Playlist name
   ]
 
-  // Current track URL reference
+  // Set properties
   currentUrl = null
+  currentPlaylist = null
+  currentPlaylistIndex = -1
+  isShuffleOn = false
+  isRepeatOn = false
 
   /**
    * Initialize the controller when connected to DOM
@@ -128,11 +135,110 @@ export default class extends Controller {
     if (typeof this.handlePauseEvent === 'function') {
       window.addEventListener('audio:pause', this.handlePauseEvent.bind(this), options)
     }
+
+    // Add playlist event listeners
+    window.addEventListener('audio:set-playlist', (e) => {
+      this.setPlaylist(e.detail.playlist, e.detail.playlistName)
+    })
+    
+    window.addEventListener('audio:next', () => this.playNext())
+    window.addEventListener('audio:prev', () => this.playPrevious())
+    window.addEventListener('audio:shuffle', () => this.toggleShuffle())
+    window.addEventListener('audio:repeat', () => this.toggleRepeat())
   }
 
   // ========================
   //  Event Handlers
   // ========================
+
+  /**
+   * Set the current playlist
+   * @param {Array} playlist - Array of song objects
+   * @param {string} playlistName - Name of the playlist
+   */
+  setPlaylist(playlist, playlistName) {
+    this.currentPlaylist = playlist
+    this.currentPlaylistIndex = -1
+    if (this.hasPlaylistNameTarget) {
+      this.playlistNameTarget.textContent = playlistName || 'Playlist'
+    }
+    this.playNext() // Start playing first song
+  }
+
+  /**
+   * Play next song in playlist
+   */
+  playNext() {
+    if (!this.currentPlaylist || this.currentPlaylist.length === 0) return
+    
+    let nextIndex = this.currentPlaylistIndex + 1
+    
+    if (this.isShuffleOn) {
+      nextIndex = Math.floor(Math.random() * this.currentPlaylist.length)
+    }
+    
+    if (nextIndex < this.currentPlaylist.length) {
+      this.playPlaylistItem(nextIndex)
+    } else if (this.isRepeatOn) {
+      // Loop back to start if repeat is on
+      this.playPlaylistItem(0)
+    } else {
+      // End of playlist
+      this.handlePlaylistEnd()
+    }
+  }
+
+  /**
+   * Play previous song in playlist
+   */
+  playPrevious() {
+    if (!this.currentPlaylist || this.currentPlaylist.length === 0) return
+    
+    const prevIndex = this.currentPlaylistIndex - 1
+    if (prevIndex >= 0) {
+      this.playPlaylistItem(prevIndex)
+    } else if (this.isRepeatOn) {
+      // Loop to end if repeat is on
+      this.playPlaylistItem(this.currentPlaylist.length - 1)
+    }
+  }
+
+  /**
+   * Play specific item from playlist
+   * @param {number} index - Index in playlist array
+   */
+  playPlaylistItem(index) {
+    if (!this.currentPlaylist || index >= this.currentPlaylist.length) return
+    
+    const song = this.currentPlaylist[index]
+    this.currentPlaylistIndex = index
+    
+    // Dispatch the play event
+    window.dispatchEvent(new CustomEvent('audio:play', {
+      detail: {
+        url: song.song_file_url,
+        title: song.title,
+        artist: song.artist.name,
+        banner: song.song_image_url || '/home-banner.jpg'
+      }
+    }))
+  }
+
+  /**
+   * Toggle shuffle mode
+   */
+  toggleShuffle() {
+    this.isShuffleOn = !this.isShuffleOn
+    // Update UI to reflect shuffle state
+  }
+
+  /**
+   * Toggle repeat mode
+   */
+  toggleRepeat() {
+    this.isRepeatOn = !this.isRepeatOn
+    // Update UI to reflect repeat state
+  }
 
   /**
    * Handle track loaded and ready to play
@@ -187,6 +293,10 @@ export default class extends Controller {
     window.dispatchEvent(new CustomEvent('audio:ended', {
       detail: { url: this.currentUrl }
     }))
+    // Auto-play next if in playlist
+    if (this.currentPlaylist) {
+      this.playNext()
+    }
   }
 
   /**
