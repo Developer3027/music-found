@@ -1,10 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
 /**
- * Song Card Controller
+ * Song Image Controller
  * 
- * Handles individual song cards in the music library with:
- * - Play/refresh button states
+ * Handles individual song album covers in the music library with:
+ * - Play button state
  * - Cross-component communication via custom events
  * - Proper cleanup on disconnect
  */
@@ -12,18 +12,18 @@ export default class extends Controller {
   // ========================
   //  Configuration
   // ========================
-
+  // Connect the player controller
+  static outlets = [ "player" ]
   static targets = [
-    "playButton",    // ▶ Play button (visible by default)
-    //"refreshButton"  // 🔄 Refresh/loading button (hidden by default)
+    "albumBorder",    // ▶ Play button (visible by default)
   ]
 
   static values = {
-    url: String,    // Audio file URL (required)
-    id: String,     // Unique song identifier (future-proofing)
-    title: String,  // Track title for display
-    artist: String,  // Artist name for display
-    banner: String // Banner art for artist
+    url: String,      // Audio file URL (required)
+    id: String,       // Unique song identifier (future-proofing)
+    title: String,    // Track title for display
+    artist: String,   // Artist name for display
+    banner: String    // Banner art for artist - Banner art is not the album art
   }
 
   // ========================
@@ -35,14 +35,17 @@ export default class extends Controller {
    * Sets up event listeners for global player events
    */
   connect() {
+    if (!this.hasAlbumBorderTarget) {
+      console.error('No albumBorderTarget found')
+    }
     // Bind methods for proper event listener removal
-    this.boundResetIcons = this.resetIcons.bind(this)
+    this.boundResetAlbumBorder = this.resetAlbumBorder.bind(this)
     this.boundHandleGlobalChange = this.handleGlobalChange.bind(this)
 
     // Listen for global player changes
-    window.addEventListener('audio:changed', this.boundResetIcons)
-    window.addEventListener('audio:playing', this.boundHandleGlobalChange)
-    window.addEventListener('audio:error', this.boundResetIcons)
+    // window.addEventListener('audio:changed', this.boundResetAlbumBorder)
+    // window.addEventListener('audio:playing', this.boundHandleGlobalChange)
+    // window.addEventListener('audio:error', this.boundResetAlbumBorder)
   }
 
   /**
@@ -50,9 +53,9 @@ export default class extends Controller {
    * Prevents memory leaks from lingering event listeners
    */
   disconnect() {
-    window.removeEventListener('audio:changed', this.boundResetIcons)
-    window.removeEventListener('audio:playing', this.boundHandleGlobalChange)
-    window.removeEventListener('audio:error', this.boundResetIcons)
+    // window.removeEventListener('audio:changed', this.boundResetAlbumBorder)
+    // window.removeEventListener('audio:playing', this.boundHandleGlobalChange)
+    // window.removeEventListener('audio:error', this.boundResetAlbumBorder)
   }
 
   // ========================
@@ -60,28 +63,37 @@ export default class extends Controller {
   // ========================
 
   /**
-   * Handle play button clicks
+   * Handle album image clicks
    * @param {Event} e - Click event
    */
-  play(e) {
+  playSong(e) {
     e.preventDefault()
-    console.log("Song: Image, image, where did I put you?")
+    // const player = this.application.controllers.find(controller => controller.identifier === 'player')
     try {
-      // Notify global player to load this track
-      window.dispatchEvent(new CustomEvent('audio:play', {
-        detail: {
+      if (this.playerOutlet) {
+        this.playerOutlet.playTrack({
           url: this.urlValue,
           title: this.titleValue || 'Unknown Track',
           artist: this.artistValue || 'Unknown Artist',
-          banner: this.bannerValue || 'music_files/home-banner.jpg'
-        }
-      }))
+          banner: this.bannerValue || 'music_files/home-banner.jpg',
+          id: this.idValue
+        })
+      }
+      // Notify global player to load this track
+      // window.dispatchEvent(new CustomEvent('audio:play', {
+      //   detail: {
+      //     url: this.urlValue,
+      //     title: this.titleValue || 'Unknown Track',
+      //     artist: this.artistValue || 'Unknown Artist',
+      //     banner: this.bannerValue || 'music_files/home-banner.jpg'
+      //   }
+      // }))
 
       // Update UI immediately
       this.showRefreshState()
     } catch (error) {
       console.error('Error dispatching play event:', error)
-      this.resetIcons()
+      this.resetAlbumBorder()
     }
   }
 
@@ -91,12 +103,12 @@ export default class extends Controller {
 
   /**
    * Handle global track changes
-   * Resets icons unless this is the currently playing track
+   * Resets album border unless this is the currently playing track
    * @param {CustomEvent} e - audio:changed event
    */
   handleGlobalChange(e) {
     if (e.detail.url !== this.urlValue) {
-      this.resetIcons()
+      this.resetAlbumBorder()
     }
   }
 
@@ -105,21 +117,19 @@ export default class extends Controller {
   // ========================
 
   /**
-   * Show refresh state (loading/playing)
+   * Show refresh state (playing)
    */
   showRefreshState() {
-    this.playButtonTarget.classList.add('border-lime-500')
-    this.playButtonTarget.classList.remove('border-gray-200')
-    //this.refreshButtonTarget.classList.remove('hidden')
+    this.albumBorderTarget.classList.add('border-lime-500')
+    this.albumBorderTarget.classList.remove('border-gray-200')
   }
 
   /**
-   * Reset to default play button state
+   * Reset to default album border state
    */
-  resetIcons() {
-    this.playButtonTarget.classList.remove('border-lime-500')
-    this.playButtonTarget.classList.add('border-gray-200')
-    //this.refreshButtonTarget.classList.add('hidden')
+  resetAlbumBorder() {
+    this.albumBorderTarget.classList.remove('border-lime-500')
+    this.albumBorderTarget.classList.add('border-gray-200')
   }
 
   // ========================
@@ -127,9 +137,9 @@ export default class extends Controller {
   // ========================
 
   /**
-   * Ensure targets exist before manipulation
+   * Ensure target exist before manipulation
    */
-  get iconsExist() {
-    return this.hasPlayButtonTarget //&& this.hasRefreshButtonTarget
+  get albumExist() {
+    return this.hasAlbumBorderTarget
   }
 }

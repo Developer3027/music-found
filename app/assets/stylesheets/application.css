@@ -14,8 +14,13 @@
     cursor: pointer;
   }
 
-  .transition-none {
-    transition: none !important;
+  /* In your CSS */
+  .loading-progress {
+    transition: width 0.5s ease-out;
+  }
+
+  .loading-progress.transition-none {
+    transition: none;
   }
   
   [data-music--player-target="loadingProgress"] {
