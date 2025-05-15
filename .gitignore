@@ -5,7 +5,7 @@
 /.bundle
 
 # Ignore music files
-/public/music_files
+/public/music_files/*
 
 # Ignore all environment files.
 /.env*
