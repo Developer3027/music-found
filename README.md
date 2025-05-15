@@ -9,18 +9,25 @@ This app is built on Rails using a PostgreSQL database. The large image and audi
 ## Home Screen
 ![app index](./public/Screenshot%20from%202025-04-25%2016-23-40.png)
 
-## Player Screen
+## Player Screen v1
 ![Player](./public/Screenshot%20from%202025-05-01%2011-53-09.png)
 
-Things you may want to cover:
+## Player Screen v2
+![playerv2](./public//Screenshot%20from%202025-05-09%2014-00-14.png)
 
-* Ruby version
+New UI with version two. For desktop and tablet, mobile is not built yet, features a sidebar for main navigation. The main banner image changes with selection including the title and subtitle with Stimulus. Turbo frames are used for main navigation to give the spa vibe.
+
+* Ruby version 3.3.7
+
+* Rails version 8.0.1
 
 * System dependencies
 
 * Configuration
 
+
 * Database creation
+Typical for PostgreSQL. I set up host, username: (default for PG), password: (default for PG), for my local setup.
 
 * Database initialization
 
