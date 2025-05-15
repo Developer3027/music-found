@@ -193,13 +193,16 @@ export default class extends Controller {
   handlePlayRequest(e) {
     try {
       const { url, title, artist, banner } = e.detail
-      this.nowPlayingTarget.textContent = title || 'Unknown Track'
-      this.artistNameTarget.textContent = artist || 'Unknown Artist'
+      console.log('e.detail:', e.detail)
 
-      this.updateBanner({
-        bannerImage: banner || 'music_files/home-banner.jpg'
-      })
-
+      document.dispatchEvent(new CustomEvent('music:banner:update', {
+        detail: {
+          image: banner || 'music_files/home-banner.jpg',
+          title: title || 'Unknown Track',
+          subtitle: artist || 'Unknown Artist'
+        }
+      }))
+      
       if (!this.wavesurfer || this.currentUrl !== url) {
         this.currentUrl = url
         this.loadTrack(url)
@@ -347,25 +350,6 @@ export default class extends Controller {
     //this.loadingContainerTarget.classList.add('hidden')
     this.loadingProgressTarget.style.width = '0%'
     this.loadingProgressTarget.classList.remove('transition-none')
-  }
-
-  // music--player_controller.js
-  updateBanner(songData) {
-    console.log('MP: Thanks song, got it, showing it.')
-    // Image update
-    this.bannerImageTarget.src = songData.bannerImage || "/home-banner.jpg";
-    
-    // Overlay text
-    //this.bannerTitleTarget.textContent = songData.title;
-    //this.bannerSubtitleTarget.textContent = `${songData.artist} • ${songData.album}`;
-    
-    // Optional: Fade animation
-    if (this.hasBannerImageTarget) {
-      this.bannerImageTarget.style.opacity = 0
-      setTimeout(() => {
-        this.bannerImageTarget.style.opacity = 1
-      }, 50)
-    }
   }
 
   // ========================

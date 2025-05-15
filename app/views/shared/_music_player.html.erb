@@ -1,32 +1,13 @@
 <!-- Music Player -->
 <div data-controller="music--player" class="flex flex-col top-0 w-full">
   <!-- Banner Section -->
-  <div class="relative w-full h-[300px]" data-music--player-target="bannerContainer">
-    <!-- Dynamic Image -->
-    <%= image_tag(
-      "/music_files/home-banner.jpg", 
-      class: "w-full h-full object-cover", 
-      alt: "Home Banner",
-      data: { "music--player-target": "bannerImage" }
-    ) %>
-    
-    <!-- Overlay (positioned absolutely over image) -->
-    <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.3),transparent)] flex items-start p-6" 
-     data-music--player-target="bannerOverlay">
-      <div>
-        <h2 class="text-[#FFC9A4] text-4xl font-bold" 
-            data-music--player-target="nowPlaying">Welcome back Dev3027</h2>
-        <p class="text-[#FFC9A4]" 
-          data-music--player-target="artistName">Please consider making me available to everyone.</p>
-      </div>
-    </div>
-  </div>
+  <!-- This partial will change the default banner image to the song's or playlist's image -->
+  <%= render "music/components/player/banner", 
+             banner_image: @banner_image, 
+             title: @banner_title, 
+             subtitle: @banner_subtitle %>
+
   <div class="flex justify-center items-center bg-black text-white p-4">
-    <%# <div class="flex flex-col">
-      <div data-music--player-target="nowPlaying">No song selected</div>
-      <div data-music--player-target="artistName">No artist selected</div>
-    </div> %>
-    <!-- Current time -->
     <div data-music--player-target="currentTime" class="mx-2">0:00</div>
     <div class="flex flex-col w-1/2">
       <div data-music--player-target="waveform" class="mx-2 px-2"></div>
