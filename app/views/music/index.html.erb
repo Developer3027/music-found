@@ -14,7 +14,7 @@
         <div class="flex flex-wrap justify-center items-start p-4 gap-4">
           <% @songs.each do |song| %>
             <div class="m-auto">
-              <%= render partial: "song", locals: { controller_name: "music", song: song } %>
+              <%= render partial: "smart-image", locals: { controller_name: "smart-image", song: song } %>
             </div>
           <% end %>
         </div>

@@ -5,7 +5,7 @@ import WaveSurfer from 'wavesurfer.js'
 /**
  * Global Audio Player Controller
  * 
- * Manages the persistent audio player at the bottom of the screen, handling:
+ * Manages the persistent audio player on the screen, handling:
  * - Audio playback via WaveSurfer.js
  * - Time display and countdown
  * - Loading states and error recovery
@@ -19,7 +19,6 @@ export default class extends Controller {
     "waveform",          // WaveSurfer visualization container
     "playerPlayButton",  // Play button element
     "playerPauseButton", // Pause button element
-    //"loadingContainer",  // Loading indicator container
     "loadingProgress",   // Loading progress bar
     "currentTime",       // Current playback time display
     "duration",          // Duration/countdown display
@@ -84,7 +83,7 @@ export default class extends Controller {
         barGap: 1,
         barRadius: 2,
         responsive: true,
-        backend: 'WebAudio' // More reliable than MediaElement
+        backend: 'WebAudio'
       })
       this.setupWaveSurferEvents()
     } catch (error) {
@@ -120,10 +119,7 @@ export default class extends Controller {
     // Use passive listeners where possible
     const options = { passive: true }
     
-    // Safely add event listeners
-    if (typeof this.handlePlayEvent === 'function') {
-      window.addEventListener('audio:play', this.handlePlayEvent.bind(this), options)
-    }
+    window.addEventListener('player:play-requested', this.handlePlayRequest.bind(this))
     
     if (typeof this.handlePauseEvent === 'function') {
       window.addEventListener('audio:pause', this.handlePauseEvent.bind(this), options)
@@ -161,6 +157,7 @@ export default class extends Controller {
    * Handle play event from WaveSurfer
    */
   handlePlay() {
+    console.log('playing...')
     this.playerPlayButtonTarget.classList.add('hidden')
     this.playerPauseButtonTarget.classList.remove('hidden')
     window.dispatchEvent(new CustomEvent('audio:playing', { 
@@ -193,17 +190,14 @@ export default class extends Controller {
    * Handle external play event (from song cards)
    * @param {Event} e - Custom audio:play event
    */
-  handlePlayEvent(e) {
-    console.log('MP: OMG I love this song ', e.detail.title)
+  handlePlayRequest(e) {
     try {
       const { url, title, artist, banner } = e.detail
       this.nowPlayingTarget.textContent = title || 'Unknown Track'
       this.artistNameTarget.textContent = artist || 'Unknown Artist'
 
       this.updateBanner({
-        // title: title || 'Unknown Track',
-        // artist: artist || 'Unknown Artist',
-        bannerImage: banner || '/home-banner.jpg'
+        bannerImage: banner || 'music_files/home-banner.jpg'
       })
 
       if (!this.wavesurfer || this.currentUrl !== url) {
@@ -223,14 +217,20 @@ export default class extends Controller {
    * @param {number} progress - Loading percentage (0-100)
    */
   handleLoadingProgress(progress) {
-    //this.loadingContainerTarget.classList.remove('hidden')
-    this.loadingProgressTarget.style.width = `${progress}%`
+    const smoothingFactor = 0.3;
+    const currentWidth = parseFloat(this.loadingProgressTarget.style.width) || 0;
+    const smoothedProgress = currentWidth + (progress - currentWidth) * smoothingFactor;
+    
+    this.loadingProgressTarget.style.width = `${smoothedProgress}%`
     
     if (progress === 100) {
-      this.loadingProgressTarget.classList.add('transition-none')
+      // Wait for the smooth transition to complete before snapping to 100%
       setTimeout(() => {
+        this.loadingProgressTarget.classList.add('transition-none')
         this.loadingProgressTarget.style.width = '100%'
-      }, 10)
+      }, 500) // Match this with your CSS transition duration
+    } else {
+      this.loadingProgressTarget.classList.remove('transition-none')
     }
   }
 

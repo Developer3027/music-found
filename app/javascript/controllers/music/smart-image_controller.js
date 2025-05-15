@@ -63,12 +63,11 @@ export default class extends Controller {
    * Handle play button clicks
    * @param {Event} e - Click event
    */
-  play(e) {
+  playRequest(e) {
     e.preventDefault()
-    console.log("Song: Image, image, where did I put you?")
     try {
       // Notify global player to load this track
-      window.dispatchEvent(new CustomEvent('audio:play', {
+      window.dispatchEvent(new CustomEvent('player:play-requested', {
         detail: {
           url: this.urlValue,
           title: this.titleValue || 'Unknown Track',
