@@ -14,15 +14,15 @@ import WaveSurfer from 'wavesurfer.js'
 export default class extends Controller {
   // DOM Element Targets
   static targets = [
-    "nowPlaying",        // Display for current track title
-    "artistName",        // Display for artist name
-    "waveform",          // WaveSurfer visualization container
-    "playerPlayButton",  // Play button element
-    "playerPauseButton", // Pause button element
-    "loadingProgress",   // Loading progress bar
+    //"nowPlaying",        // Display for current track title
+    //"artistName",        // Display for artist name
+    //"waveform",          // WaveSurfer visualization container
+    //"playerPlayButton",  // Play button element
+    //"playerPauseButton", // Pause button element
+    //"loadingProgress",   // Loading progress bar
     "currentTime",       // Current playback time display
     "duration",          // Duration/countdown display
-    "bannerImage",       // Banner image element
+    //"bannerImage",       // Banner image element
   ]
 
   // Current track URL reference
@@ -33,6 +33,7 @@ export default class extends Controller {
    * Sets up WaveSurfer instance and all event listeners
    */
   connect() {
+    console.log('connected player')
     // Set default UI state
     this.resetPlayerUI()
     
@@ -44,8 +45,6 @@ export default class extends Controller {
   }
   
   resetPlayerUI() {
-    if (this.hasNowPlayingTarget) this.nowPlayingTarget.textContent = 'Welcome back Dev3027'
-    if (this.hasArtistNameTarget) this.artistNameTarget.textContent = 'Please make me available to everyone.'
     if (this.hasCurrentTimeTarget) this.currentTimeTarget.textContent = '0:00'
     if (this.hasDurationTarget) this.durationTarget.textContent = '0:00'
   }
@@ -70,7 +69,7 @@ export default class extends Controller {
   initializeWaveSurfer() {
     try {
       this.wavesurfer = WaveSurfer.create({
-        container: this.waveformTarget,
+        //container: this.waveformTarget,
         waveColor: "#00B1D1",
         progressColor: "#01DFB6",
         height: 50,
@@ -85,11 +84,25 @@ export default class extends Controller {
         responsive: true,
         backend: 'WebAudio'
       })
+      document.addEventListener("waveform:ready", this.handleWaveformReady.bind(this))
+    
       this.setupWaveSurferEvents()
     } catch (error) {
       console.error('WaveSurfer initialization failed:', error)
-      // Fallback UI state
-      this.element.classList.add('player-error-state')
+    }
+  }
+
+  handleWaveformReady(event) {
+    if (event.detail.hasContainer && this.wavesurfer) {
+      console.log("Initializing waveform with container")
+      this.wavesurfer.setOptions({
+        container: event.target.containerTarget
+      })
+      
+      // Optional: Store reference to waveform controller
+      this.waveformController = event.target
+    } else {
+      console.warn("Waveform ready but no container found")
     }
   }
 
@@ -110,8 +123,6 @@ export default class extends Controller {
     })
     this.wavesurfer.on('finish', this.handleTrackEnd.bind(this))
     
-    // Loading progress events
-    this.wavesurfer.on('loading', this.handleLoadingProgress.bind(this))
     this.wavesurfer.on('error', this.handleAudioError.bind(this))
     
     // Time updates
@@ -204,28 +215,6 @@ export default class extends Controller {
   }
 
   /**
-   * Handle loading progress updates
-   * @param {number} progress - Loading percentage (0-100)
-   */
-  handleLoadingProgress(progress) {
-    const smoothingFactor = 0.3;
-    const currentWidth = parseFloat(this.loadingProgressTarget.style.width) || 0;
-    const smoothedProgress = currentWidth + (progress - currentWidth) * smoothingFactor;
-    
-    this.loadingProgressTarget.style.width = `${smoothedProgress}%`
-    
-    if (progress === 100) {
-      // Wait for the smooth transition to complete before snapping to 100%
-      setTimeout(() => {
-        this.loadingProgressTarget.classList.add('transition-none')
-        this.loadingProgressTarget.style.width = '100%'
-      }, 500)
-    } else {
-      this.loadingProgressTarget.classList.remove('transition-none')
-    }
-  }
-
-  /**
    * Handle audio errors
    */
   handleAudioError() {
@@ -249,16 +238,11 @@ export default class extends Controller {
         // Reset playback
         this.wavesurfer?.pause()
         this.wavesurfer?.setTime(0)
+        this.currentUrl = url
     
         // Update UI
         this.currentTimeTarget.textContent = '0:00'
         this.durationTarget.textContent = '0:00'
-        this.showLoadingIndicator()
-        
-        // Notify components
-        window.dispatchEvent(new CustomEvent('audio:changed', {
-          detail: { url }
-        }))
     
         // Load the track
         this.wavesurfer.load(url)
@@ -299,25 +283,15 @@ export default class extends Controller {
     this.currentTimeTarget.textContent = this.formatTime(currentTime)
     
     if (this.wavesurfer.getDuration()) {
+      document.dispatchEvent(new CustomEvent("player:time:update", {
+        details: { 
+          currentTime,
+          duration: this.wavesurfer.getDuration()
+        }
+      }))
       const remaining = this.wavesurfer.getDuration() - currentTime
       this.durationTarget.textContent = `-${this.formatTime(remaining)}`
     }
-  }
-
-  /**
-   * Show loading indicator
-   */
-  showLoadingIndicator() {
-    this.loadingProgressTarget.style.width = '0%'
-    this.loadingProgressTarget.classList.remove('transition-none')
-  }
-
-  /**
-   * Hide loading indicator
-   */
-  hideLoadingIndicator() {
-    this.loadingProgressTarget.style.width = '0%'
-    this.loadingProgressTarget.classList.remove('transition-none')
   }
 
   // ========================

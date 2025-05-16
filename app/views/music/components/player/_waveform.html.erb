@@ -1,0 +1,14 @@
+<div data-controller="music--waveform" 
+     data-action="waveform:ready@document->music--player#handleWaveformReady">
+     
+  <div data-music--waveform-target="container" 
+       class="w-full h-[50px]">
+    <!-- Wavesurfer will render here -->
+  </div>
+  
+  <div class="h-1 bg-gray-700 relative mt-2">
+    <div data-music--waveform-target="progressBar" 
+         class="absolute top-0 left-0 h-full bg-lime-500 transition-all duration-300"
+         style="width: 0%"></div>
+  </div>
+</div>
