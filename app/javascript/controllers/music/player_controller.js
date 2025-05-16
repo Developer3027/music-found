@@ -97,11 +97,17 @@ export default class extends Controller {
    * Set up all WaveSurfer event listeners
    */
   setupWaveSurferEvents() {
-    
-    // Playback state events
     this.wavesurfer.on('ready', this.handleTrackReady.bind(this))
-    this.wavesurfer.on('play', this.handlePlay.bind(this))
-    this.wavesurfer.on('pause', this.handlePause.bind(this))
+    this.wavesurfer.on('play', () => {
+      document.dispatchEvent(new CustomEvent("player:state:changed", {
+        detail: { playing: true, url: this.currentUrl }
+      }))
+    })
+    this.wavesurfer.on('pause', () => {
+      document.dispatchEvent(new CustomEvent("player:state:changed", {
+        detail: { playing: false, url: this.currentUrl }
+      }))
+    })
     this.wavesurfer.on('finish', this.handleTrackEnd.bind(this))
     
     // Loading progress events
@@ -116,14 +122,16 @@ export default class extends Controller {
    * Set up custom event listeners
    */
   setupEventListeners() {
-    // Use passive listeners where possible
-    const options = { passive: true }
-    
+    // Listen for the "player:play-requested" event
     window.addEventListener('player:play-requested', this.handlePlayRequest.bind(this))
-    
-    if (typeof this.handlePauseEvent === 'function') {
-      window.addEventListener('audio:pause', this.handlePauseEvent.bind(this), options)
-    }
+    // Listen for the "player:play" event
+    document.addEventListener("player:play", () => {
+      this.wavesurfer.play()
+    })
+    // Listen for the "player:pause" event
+    document.addEventListener("player:pause", () => {
+      this.wavesurfer.pause()
+    })
   }
 
   // ========================
@@ -135,45 +143,20 @@ export default class extends Controller {
    */
   handleTrackReady() {
     try {
-      this.playerPlayButtonTarget.classList.add('hidden')
-      this.playerPauseButtonTarget.classList.remove('hidden')
       this.durationTarget.textContent = this.formatTime(this.wavesurfer.getDuration())
       this.updateTimeDisplay(0)
       this.hideLoadingIndicator()
       
-      // Auto-play only if user has previously interacted
-      // Currently not using this feature but tested good.
-      this.wavesurfer.play()
-      // if (this.canAutoplay) {
-      //   this.wavesurfer.play()
-      // }
+      document.dispatchEvent(new CustomEvent("player:state:changed", {
+        detail: { 
+          playing: this.wavesurfer.isPlaying(),
+          url: this.currentUrl 
+        }
+      }))
     } catch (error) {
       console.error('Error handling track ready:', error)
       this.handleAudioError()
     }
-  }
-
-  /**
-   * Handle play event from WaveSurfer
-   */
-  handlePlay() {
-    console.log('playing...')
-    this.playerPlayButtonTarget.classList.add('hidden')
-    this.playerPauseButtonTarget.classList.remove('hidden')
-    window.dispatchEvent(new CustomEvent('audio:playing', { 
-      detail: { playing: true, url: this.currentUrl }
-    }))
-  }
-
-  /**
-   * Handle pause event from WaveSurfer
-   */
-  handlePause() {
-    this.playerPlayButtonTarget.classList.remove('hidden')
-    this.playerPauseButtonTarget.classList.add('hidden')
-    window.dispatchEvent(new CustomEvent('audio:playing', { 
-      detail: { playing: false, url: this.currentUrl }
-    }))
   }
 
   /**
@@ -192,23 +175,28 @@ export default class extends Controller {
    */
   handlePlayRequest(e) {
     try {
-      const { url, title, artist, banner } = e.detail
+      const { url, title, artist, banner, autoplay = false, updateBanner = true } = e.detail
       console.log('e.detail:', e.detail)
 
-      document.dispatchEvent(new CustomEvent('music:banner:update', {
-        detail: {
-          image: banner || 'music_files/home-banner.jpg',
-          title: title || 'Unknown Track',
-          subtitle: artist || 'Unknown Artist'
-        }
-      }))
+      if (updateBanner) {
+        document.dispatchEvent(new CustomEvent('music:banner:update', {
+          detail: {
+            image: banner || 'music_files/home-banner.jpg',
+            title: title || 'Unknown Track',
+            subtitle: artist || 'Unknown Artist'
+          }
+        }))
+      }
       
       if (!this.wavesurfer || this.currentUrl !== url) {
         this.currentUrl = url
-        this.loadTrack(url)
+        this.loadTrack(url, autoplay)
+      } else if (this.wavesurfer.isPlaying()) {
+        this.wavesurfer.pause()
       } else {
-        this.togglePlayback()
+        this.wavesurfer.play()
       }
+        console.log('Already playing:', url)
     } catch (error) {
       console.error('Error handling play event:', error)
       this.handleAudioError()
@@ -231,7 +219,7 @@ export default class extends Controller {
       setTimeout(() => {
         this.loadingProgressTarget.classList.add('transition-none')
         this.loadingProgressTarget.style.width = '100%'
-      }, 500) // Match this with your CSS transition duration
+      }, 500)
     } else {
       this.loadingProgressTarget.classList.remove('transition-none')
     }
@@ -241,12 +229,7 @@ export default class extends Controller {
    * Handle audio errors
    */
   handleAudioError() {
-    console.error('Audio playback error')
     this.hideLoadingIndicator()
-    this.playerPlayButtonTarget.classList.remove('hidden')
-    this.playerPauseButtonTarget.classList.add('hidden')
-    
-    // Notify other components
     window.dispatchEvent(new CustomEvent('audio:error', {
       detail: { url: this.currentUrl }
     }))
@@ -256,55 +239,42 @@ export default class extends Controller {
   //  Public Methods
   // ========================
 
-  /**
-   * Toggle between play and pause states
-   */
-  togglePlayback() {
-    try {
-      this.wavesurfer.playPause()
-    } catch (error) {
-      console.error('Error toggling playback:', error)
-      this.handleAudioError()
-    }
-  }
 
     /**
    * Load a new audio track (always starts from 0)
    * @param {string} url - Audio file URL
    */
-  loadTrack(url) {
-    try {
-      // 1. Reset playback position before loading
-      if (this.wavesurfer) {
-        this.wavesurfer.pause()
-        this.wavesurfer.setTime(0) // Explicitly reset to start
-      }
-
-      // 2. Update UI immediately
-      this.currentTimeTarget.textContent = this.formatTime(0)
-      this.durationTarget.textContent = '-0:00'
-      
-      // 3. Notify other components
-      window.dispatchEvent(new CustomEvent('audio:changed', {
-        detail: { url: url }
-      }))
-      
-      // 4. Show loading state and load
-      this.showLoadingIndicator()
-      this.wavesurfer.load(url)
-      
-      // 5. Force-ready state if already cached
-      setTimeout(() => {
-        if (this.wavesurfer?.isReady) {
-          this.handleTrackReady()
+    loadTrack(url, autoplay = false) {
+      try {
+        // Reset playback
+        this.wavesurfer?.pause()
+        this.wavesurfer?.setTime(0)
+    
+        // Update UI
+        this.currentTimeTarget.textContent = '0:00'
+        this.durationTarget.textContent = '0:00'
+        this.showLoadingIndicator()
+        
+        // Notify components
+        window.dispatchEvent(new CustomEvent('audio:changed', {
+          detail: { url }
+        }))
+    
+        // Load the track
+        this.wavesurfer.load(url)
+    
+        // Handle autoplay
+        if (autoplay) {
+          this.wavesurfer.once('ready', () => {
+            console.log('Autoplaying track')
+            this.wavesurfer.play()
+          })
         }
-      }, 100)
-      
-    } catch (error) {
-      console.error('Error loading track:', error)
-      this.handleAudioError()
+      } catch (error) {
+        console.error('Error loading track:', error)
+        this.handleAudioError()
+      }
     }
-  }
 
   // ========================
   //  UI Helpers
@@ -338,7 +308,6 @@ export default class extends Controller {
    * Show loading indicator
    */
   showLoadingIndicator() {
-    //this.loadingContainerTarget.classList.remove('hidden')
     this.loadingProgressTarget.style.width = '0%'
     this.loadingProgressTarget.classList.remove('transition-none')
   }
@@ -347,7 +316,6 @@ export default class extends Controller {
    * Hide loading indicator
    */
   hideLoadingIndicator() {
-    //this.loadingContainerTarget.classList.add('hidden')
     this.loadingProgressTarget.style.width = '0%'
     this.loadingProgressTarget.classList.remove('transition-none')
   }
@@ -375,10 +343,4 @@ export default class extends Controller {
   //  Getters
   // ========================
 
-  /**
-   * Check if autoplay is permitted
-   */
-  // get canAutoplay() {
-  //   return document.body.dataset.audioAutoplay === 'true'
-  // }
 }

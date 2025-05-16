@@ -15,15 +15,14 @@ export default class extends Controller {
 
   updateBanner(event) {
     const { image, title, subtitle } = event.detail
-    console.log('event detail:', event.detail)
-    
-    if (image) {
-      this.imageTarget.src = image
-      // Optional fade animation
+  
+    // Only update if the image actually changed
+    if (image && this.imageTarget.src !== image) {
       this.imageTarget.style.opacity = 0
       setTimeout(() => {
+        this.imageTarget.src = image
         this.imageTarget.style.opacity = 1
-      }, 50)
+      }, 500)
     }
     
     if (title) this.titleTarget.textContent = title
