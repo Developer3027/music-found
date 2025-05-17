@@ -14,15 +14,10 @@ import WaveSurfer from 'wavesurfer.js'
 export default class extends Controller {
   // DOM Element Targets
   static targets = [
-    "nowPlaying",        // Display for current track title
-    "artistName",        // Display for artist name
     "waveform",          // WaveSurfer visualization container
-    "playerPlayButton",  // Play button element
-    "playerPauseButton", // Pause button element
     "loadingProgress",   // Loading progress bar
     "currentTime",       // Current playback time display
     "duration",          // Duration/countdown display
-    "bannerImage",       // Banner image element
   ]
 
   // Current track URL reference
@@ -33,21 +28,11 @@ export default class extends Controller {
    * Sets up WaveSurfer instance and all event listeners
    */
   connect() {
-    // Set default UI state
-    this.resetPlayerUI()
-    
     // Initialize WaveSurfer but don't load anything
     this.initializeWaveSurfer()
     
     // Safe event listener setup
     this.setupEventListeners()
-  }
-  
-  resetPlayerUI() {
-    if (this.hasNowPlayingTarget) this.nowPlayingTarget.textContent = 'Welcome back Dev3027'
-    if (this.hasArtistNameTarget) this.artistNameTarget.textContent = 'Please make me available to everyone.'
-    if (this.hasCurrentTimeTarget) this.currentTimeTarget.textContent = '0:00'
-    if (this.hasDurationTarget) this.durationTarget.textContent = '0:00'
   }
 
   /**
@@ -196,7 +181,6 @@ export default class extends Controller {
       } else {
         this.wavesurfer.play()
       }
-        console.log('Already playing:', url)
     } catch (error) {
       console.error('Error handling play event:', error)
       this.handleAudioError()
