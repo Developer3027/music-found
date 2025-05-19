@@ -160,15 +160,15 @@ export default class extends Controller {
    */
   handlePlayRequest(e) {
     try {
-      const { url, title, artist, banner, autoplay = false, updateBanner = true } = e.detail
+      const { url, title, artist, banner, autoplay = false, updateBanner } = e.detail
       console.log('e.detail:', e.detail)
 
-      if (updateBanner) {
+      if (updateBanner !== false) {
         document.dispatchEvent(new CustomEvent('music:banner:update', {
           detail: {
-            image: banner || 'music_files/home-banner.jpg',
-            title: title || 'Unknown Track',
-            subtitle: artist || 'Unknown Artist'
+            image: banner,
+            title: title,
+            subtitle: artist
           }
         }))
       }

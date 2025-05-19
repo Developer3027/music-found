@@ -23,7 +23,9 @@ export default class extends Controller {
     e.preventDefault()
     const autoplay = localStorage.getItem('audioAutoplay') === 'true'
 
-    const updateBanner = this.currentUrl != this.urlValue
+    const currentBanner = this.bannerValue || 'music_files/home-banner.jpg'
+    const newBanner = e.target.dataset.banner || 'music_files/home-banner.jpg'
+    const updateBanner = currentBanner !== newBanner
 
     window.dispatchEvent(new CustomEvent('player:play-requested', {
       detail: {

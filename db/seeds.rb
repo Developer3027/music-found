@@ -20,18 +20,18 @@ p "Created Admin"
 artists_data = [
   {
     name: "Chris Rea",
-    image_url: "music_files/chris rea/chris-rea.jpg",
+    image_url: "music_files/chris_rea/chris_rea-artist.jpeg",
     albums: [
       {
         title: "Josephine",
         release_year: 1985,
         genre_name: "Blues Rock",
-        cover_art_url: "music_files/chris rea/josephine.jpeg",
+        cover_art_url: "music_files/chris_rea/josephine-s-m.jpg",
         songs: [
           {
             title: "Josephine",
-            song_image_url: "music_files/chris rea/josephine.jpeg",
-            song_file_url: "music_files/chris rea/josephine.mp3"
+            song_image_url: "music_files/chris_rea/josephine.jpeg",
+            song_file_url: "music_files/chris_rea/josephine.mp3"
           }
         ]
       }
@@ -39,23 +39,23 @@ artists_data = [
   },
   {
     name: "David Lee Roth",
-    image_url: "music_files/david lee roth/david-lee-roth.jpg",
+    image_url: "music_files/david_lee_roth/david_lee_roth-artist.jpeg",
     albums: [
       {
         title: "Skyscraper",
         release_year: 1988,
         genre_name: "Hard Rock",
-        cover_art_url: "music_files/david lee roth/Skyscraper_(David_Lee_Roth_album_-_cover_art).jpg",
+        cover_art_url: "music_files/david_lee_roth/Skyscraper_(David_Lee_Roth_album_-_cover_art).jpg",
         songs: [
           {
             title: "Hina",
-            song_image_url: "music_files/david lee roth/Skyscraper_(David_Lee_Roth_album_-_cover_art).jpg",
-            song_file_url: "music_files/david lee roth/Hina.mp3"
+            song_image_url: "music_files/david_lee_roth/hina.jpeg",
+            song_file_url: "music_files/david_lee_roth/Hina.mp3"
           },
           {
             title: "Skyscraper",
-            song_image_url: "music_files/david lee roth/Skyscraper_(David_Lee_Roth_album_-_cover_art).jpg",
-            song_file_url: "music_files/david lee roth/Skyscraper.mp3"
+            song_image_url: "music_files/david_lee_roth/skyscraper.jpeg",
+            song_file_url: "music_files/david_lee_roth/Skyscraper.mp3"
           }
         ]
       }
@@ -63,18 +63,18 @@ artists_data = [
   },
   {
     name: "Dream on Dreamer",
-    image_url: "music_files/dream on dreamer/dream-on-dreamer.png",
+    image_url: "music_files/dream_on_dreamer/dream_on_dreamer-artist.jpeg",
     albums: [
       {
         title: "It Comes and Goes",
         release_year: 2018,
         genre_name: "Rock",
-        cover_art_url: "music_files/dream on dreamer/runaway.jpeg",
+        cover_art_url: "music_files/dream_on_dreamer/runaway.jpeg",
         songs: [
           {
             title: "Runaway",
-            song_image_url: "music_files/dream on dreamer/runaway.jpeg",
-            song_file_url: "music_files/dream on dreamer/runaway.mp3"
+            song_image_url: "music_files/dream_on_dreamer/runaway.jpeg",
+            song_file_url: "music_files/dream_on_dreamer/runaway.mp3"
           }
         ]
       }
@@ -101,23 +101,118 @@ artists_data = [
   },
   {
     name: "Heavy Metal",
-    image_url: "music_files/heavy metal/heavy-metal-movie.jpg",
+    image_url: "music_files/heavy_metal/heavy_metal-artist.jpeg",
     albums: [
       {
         title: "Heavy Metal",
         release_year: 2016,
         genre_name: "Rock",
-        cover_art_url: "music_files/heavy metal/heavy-metal.jpg",
+        cover_art_url: "music_files/heavy_metal/heavy-metal.jpg",
         songs: [
           {
             title: "Blue Lamp",
-            song_image_url: "music_files/heavy metal/heavy-metal.jpg",
-            song_file_url: "music_files/heavy metal/blue-lamp.mp3"
+            song_image_url: "music_files/heavy_metal/heavy-metal.jpg",
+            song_file_url: "music_files/heavy_metal/blue-lamp.mp3"
           },
           {
             title: "All-Of-You",
-            song_image_url: "music_files/heavy metal/heavy-metal.jpg",
-            song_file_url: "music_files/heavy metal/All-Of-You.mp3"
+            song_image_url: "music_files/heavy_metal/heavy-metal.jpg",
+            song_file_url: "music_files/heavy_metal/All-Of-You.mp3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: "Kaskade",
+    image_url: "music_files/kaskade/kaskade-artist.jpeg",
+    albums: [
+      {
+        title: "Strobelite Seduction",
+        release_year: 2008,
+        genre_name: "Electronic",
+        cover_art_url: "music_files/kaskade/kaskade.jpg",
+        songs: [
+          {
+            title: "Move for Me",
+            song_image_url: "music_files/kaskade/kaskade.jpg",
+            song_file_url: "music_files/kaskade/move for me.mp3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: "Korn",
+    image_url: "music_files/Korn/korn-artist.jpeg",
+    albums: [
+      {
+        title: "The Paradigm Shift",
+        release_year: 2014,
+        genre_name: "Rock",
+        cover_art_url: "music_files/Korn/paradigm-shift.jpg",
+        songs: [
+          {
+            title: "Spike in My Veins",
+            song_image_url: "music_files/Korn/spike in my veins.jpeg",
+            song_file_url: "music_files/Korn/Spike in My Veins.mp3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: "The Smiths",
+    image_url: "music_files/KWM_Music/kwm-artist.jpeg",
+    albums: [
+      {
+        title: "Hatful of Hollow",
+        release_year: 1984,
+        genre_name: "Rock",
+        cover_art_url: "music_files/KWM_Music/how soon is now.jpeg",
+        songs: [
+          {
+            title: "How Soon is Now",
+            song_image_url: "music_files/KWM_Music/how soon is now.jpeg",
+            song_file_url: "music_files/KWM_Music/How Soon is Now.mp3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: "Motley_Crue",
+    image_url: "music_files/motley_crue/dr_feelgood-artist.jpeg",
+    albums: [
+      {
+        title: "Dr. Feelgood",
+        release_year: 1989,
+        genre_name: "Heavy Metal",
+        cover_art_url: "music_files/motley_crue/Motley_Crue_-_Dr_Feelgood-front.jpg",
+        songs: [
+          {
+            title: "Dr. Feelgood",
+            song_image_url: "music_files/motley_crue/Motley_Crue_-_Dr_Feelgood-front.jpg",
+            song_file_url: "music_files/motley_crue/dr-feelgood.mp3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: "Sakoya",
+    image_url: "music_files/sakoya/sakoya-artist.jpeg",
+    albums: [
+      {
+        title: "Wandering",
+        release_year: 2023,
+        genre_name: "Rock",
+        cover_art_url: "music_files/sakoya/wandering.jpeg",
+        songs: [
+          {
+            title: "Wandering",
+            song_image_url: "music_files/sakoya/wandering.jpeg",
+            song_file_url: "music_files/sakoya/wandering.mp3"
           }
         ]
       }

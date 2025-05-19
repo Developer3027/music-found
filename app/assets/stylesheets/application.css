@@ -26,6 +26,12 @@
     transition: width 0.3s ease-out;
   }
 
+  /* Add transition for the banner image */
+  [data-music--banner-target="image"] {
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+    will-change: opacity; /* Helps with performance */
+  }
+
   /* app/assets/stylesheets/application.css */
   [data-music--player-target="currentTime"],
   [data-music--player-target="duration"] {

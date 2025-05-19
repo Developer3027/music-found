@@ -1,24 +1,26 @@
-<section class="text-zinc-100 flex min-h-screen">
-  <!-- Sidebar (fixed width) -->
-  <%= render partial: "shared/sidebar" %>
+<section class="flex justify-center items-center bg-zinc-900text-zinc-100 w-full min-h-screen">
+  <div class="flex w-full max-w-5xl">
+    <!-- Sidebar (fixed width) -->
+    <%= render "music/components/sidebar/root" %>
 
-  <!-- Main Content Area (flexible width) -->
-  <div class="flex-1 overflow-y-auto bg-[linear-gradient(to_bottom,#856144_0%,#856144_40%,#7D6757_60%,#6C747C_80%,#D9D9D9_100%)] min-h-screen">
-    <!-- Turbo Frame Target -->
-    <turbo-frame id="music-frame" class="w-full">
-      <%= render partial: "shared/music_player" %>
-      <!-- Current Index Content -->
-      <div class="w-full flex flex-col m-auto  text-[#1E1E1E]">
-        <h2 class="kanit font-medium mx-4 py-2">Random Songs</h2>
-        <hr class="mb-3 mx-4">
-        <div class="flex flex-wrap justify-center items-start p-4 gap-4">
-          <% @songs.each do |song| %>
-            <div class="m-auto">
-              <%= render partial: "music/components/smart-image", locals: { controller_name: "smart-image", song: song } %>
-            </div>
-          <% end %>
+    <!-- Main Content Area (flexible width) -->
+    <div class="flex-1 overflow-y-auto bg-[linear-gradient(to_bottom,#856144_0%,#856144_40%,#7D6757_60%,#6C747C_80%,#D9D9D9_100%)] min-h-screen">
+      <!-- Turbo Frame Target -->
+      <turbo-frame id="music-frame" class="w-full">
+        <%= render partial: "shared/music_player" %>
+        <!-- Current Index Content -->
+        <div class="w-full flex flex-col m-auto  text-[#1E1E1E]">
+          <h2 class="kanit font-medium mx-4 py-2">Random Songs</h2>
+          <hr class="mb-3 mx-4">
+          <div class="flex flex-wrap justify-center items-start p-4 gap-4">
+            <% @songs.each do |song| %>
+              <div class="m-auto">
+                <%= render partial: "music/components/smart-image", locals: { controller_name: "smart-image", song: song } %>
+              </div>
+            <% end %>
+          </div>
         </div>
-      </div>
-    </turbo-frame>
+      </turbo-frame>
+    </div>
   </div>
 </section>

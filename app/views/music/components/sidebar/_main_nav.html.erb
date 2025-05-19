@@ -1,0 +1,19 @@
+<div class="flex flex-col p-4">
+  <h2 class="kanit">Menu</h2>
+  <hr class="mb-3">
+  <ul class="kanit">
+    <%= sidebar_link_to "Home", music_index_path, "home", data: { turbo_frame: "music-frame" } %>
+
+    <%= sidebar_link_to "Favorites", music_index_path, "heart", data: { turbo_frame: "music-frame" } %>
+    
+    <%= sidebar_link_to "Artist", music_index_path, "crown", data: { turbo_frame: "music-frame" } %>
+
+    <%= sidebar_link_to "Albums", music_index_path, "record", data: { turbo_frame: "music-frame" } %>
+
+    <%= sidebar_link_to "Genres", music_index_path, "tag", data: { turbo_frame: "music-frame" } %>
+
+    <%= sidebar_link_to "Songs", music_index_path, "note", data: { turbo_frame: "music-frame" } %>
+
+    <%= sidebar_link_to "Playlists", music_playlists_path, "bars", data: { turbo_frame: "music-frame" } %>
+  </ul>
+</div>
