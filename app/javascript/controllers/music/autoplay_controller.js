@@ -15,7 +15,6 @@ export default class extends Controller {
   }
 
   updateUI() {
-    console.log('this.enabled', this.enabled)
     this.onIconTarget.classList.toggle('hidden', !this.enabled)
     this.offIconTarget.classList.toggle('hidden', this.enabled)
   }

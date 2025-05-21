@@ -8,20 +8,28 @@
              subtitle: @banner_subtitle %>
 
   <div class="flex justify-center items-center bg-black text-white p-4">
-    <div data-music--player-target="currentTime" class="mx-2">0:00</div>
-    <div class="flex flex-col w-1/2">
-      <div data-music--player-target="waveform" class="mx-2 px-2"></div>
-      <div class="h-1 bg-gray-700 relative">
-        <div data-music--player-target="loadingProgress" 
-            class="absolute top-0 left-0 h-full bg-lime-500 transition-all duration-300"
-            style="width: 0%"></div>
+    <div class="flex items-center">
+      <%= render "music/components/player/time_display" do %>
+        <div class="flex flex-col w-96">
+          <div data-music--player-target="waveform" class="mx-2 px-2"></div>
+          <div class="h-1 bg-gray-700 relative">
+            <div data-music--player-target="loadingProgress" 
+                class="absolute top-0 left-0 h-full bg-lime-500 transition-all duration-300"
+                style="width: 0%">
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="flex items-center">
+        <!-- Replace the old buttons with: -->
+        <%= render "music/components/player/play_pause_controls", playing: @playing %>
+        
+        <!-- Replace autoplay toggle with: -->
+        <%= render "music/components/player/autoplay_toggle" %>
       </div>
     </div>
-    <!-- Duration (updates when loaded) -->
-    <div data-music--player-target="duration" class="mx-2">0:00</div>
-    <!-- Replace the old buttons with: -->
-    <%= render "music/components/player/play_pause_controls", playing: @playing %>
-    <!-- Replace autoplay toggle with: -->
-    <%= render "music/components/player/autoplay_toggle" %>
+    
+    
   </div>
 </div>

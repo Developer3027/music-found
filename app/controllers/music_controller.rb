@@ -5,7 +5,7 @@ class MusicController < ApplicationController
 
   def artists
     @artists = Artist.all
-    render partial: "artists", formats: [ :html ]
+    render partial: "music/turbo_frames/artists", formats: [ :html ]
   end
 
   def audio_player
@@ -17,12 +17,19 @@ class MusicController < ApplicationController
     # end
   end
 
-  def playlists
-    @playlists = Playlist.where(is_public: true)
-    render partial: "playlists", formats: [ :html ]
-  end
+# app/controllers/music_controller.rb
+def playlists
+  @playlists = Playlist.where(is_public: true).includes(:songs)
+  render partial: "music/turbo_frames/playlists"
+end
+
+def playlist
+  @playlist = Playlist.find(params[:id])
+  @songs = @playlist.songs.order("playlist_songs.position").includes(:artist, :album)
+  render partial: "music/turbo_frames/playlist"
+end
 
   def about
-    render partial: "about", formats: [ :html ]
+    render partial: "music/turbo_frames/about", formats: [ :html ]
   end
 end

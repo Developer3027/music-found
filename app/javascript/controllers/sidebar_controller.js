@@ -5,7 +5,6 @@ export default class extends Controller {
   static targets = [ "link", "menu" ]
 
   connect() {
-    console.log("Sidebar:OK,I wanted to tell you that your awesome and I will take you where you want to go!")
     // Set the initial active link (Home in this case)
     this.setActive(this.linkTargets[0])
   }

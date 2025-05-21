@@ -24,7 +24,6 @@ export default class extends Controller {
   }
   
   toggleButtons(event) {
-    console.log('toggleButtons:', event.detail)
     const { playing } = event.detail
     this.playButtonTarget.classList.toggle("hidden", playing)
     this.pauseButtonTarget.classList.toggle("hidden", !playing)

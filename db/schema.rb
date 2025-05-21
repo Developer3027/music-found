@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_07_021149) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_20_204805) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -108,8 +108,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_07_021149) do
   end
 
   create_table "songs", force: :cascade do |t|
-    t.string "artist"
-    t.string "album"
     t.string "title"
     t.string "song_image_url"
     t.string "song_file_url"

@@ -14,10 +14,13 @@ Rails.application.routes.draw do
     end
   end
 
-  get "music", to: "music#index", as: :music
-  get "music/artists", to: "music#artists", as: :music_artists
-  get "music/playlists", to: "music#playlists", as: :music_playlists
-  get "music/about", to: "music#about", as: :music_about
+scope :music do
+  get "/", to: "music#index", as: :music
+  get "artists", to: "music#artists", as: :music_artists
+  get "playlists", to: "music#playlists", as: :music_playlists
+  get "playlists/:id", to: "music#playlist", as: :music_playlist
+  get "about", to: "music#about", as: :music_about
+end
 
   resources :music, only: [ :index ] do
     post "audio-player", to: "music#audio_player", on: :collection

@@ -5,7 +5,6 @@ export default class extends Controller {
   static targets = ["image", "title", "subtitle"]
 
   connect() {
-    console.log('banner controller connected')
     document.addEventListener("music:banner:update", this.updateBanner.bind(this))
   }
 

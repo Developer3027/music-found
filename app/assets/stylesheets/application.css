@@ -39,6 +39,19 @@
     min-width: 3.5rem; /* Prevents layout shift */
   }
 
+  .playlist-item {
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid theme('colors.gray.700');
+  }
+
+  .playlist-item:last-child {
+    border-bottom: none;
+  }
+
+  .playlist-item.active {
+    background-color: theme('colors.gray.700');
+  }
+
  .kodchasan-extralight {
   font-family: "Kodchasan", serif;
   font-weight: 200;

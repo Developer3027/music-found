@@ -224,38 +224,31 @@ artists_data = [
 [ PlaylistSong, SongGenre, Song, Album, Artist, Genre, Playlist ].each(&:destroy_all)
 
 artists_data.each do |artist_data|
-  # 1. Create Artist
-  artist = Artist.create!(
+  artist = Artist.find_or_create_by!(
     name: artist_data[:name],
     image_url: artist_data[:image_url]
   )
 
   artist_data[:albums].each do |album_data|
-    # 2. Find or Create Genre
     genre = Genre.find_or_create_by!(name: album_data[:genre_name])
 
-    # 3. Create Album (with direct genre association)
     album = artist.albums.create!(
       title: album_data[:title],
       release_year: album_data[:release_year],
       cover_art_url: album_data[:cover_art_url],
-      genre: genre # Album's primary genre
+      genre: genre
     )
 
     album_data[:songs].each do |song_data|
-      # 4. Create Song
-      song = album.songs.create!(
-        title: song_data[:title],
-        song_image_url: song_data[:song_image_url],
-        song_file_url: song_data[:song_file_url],
-        artist: artist # Direct artist association
-      )
+      song = album.songs.find_or_create_by!(
+          title: song_data[:title],
+          artist: artist
+        ) do |s|
+          s.song_image_url = song_data[:song_image_url]
+          s.song_file_url = song_data[:song_file_url]
+        end
 
-      # 5. Connect to Genre through song_genres join table
       SongGenre.create!(song: song, genre: genre)
-
-      # Alternative syntax:
-      # song.genres << genre
     end
   end
 end
@@ -268,21 +261,21 @@ playlists_data = [
     name: "Rock Classics",
     description: "The best classic rock songs",
     is_public: true,
-    cover_image_url: "music_files/rock-roll.jpg",
+    cover_image_url: "music_files/sakoya/wandering.jpeg",
     song_titles: [ "Hina", "Skyscraper", "Runaway" ]
   },
   {
     name: "Chill Vibes",
     description: "Relaxing electronic and blues",
     is_public: true,
-    cover_image_url: "music_files/chill-vibes.jpg",
+    cover_image_url: "music_files/default_playlist.jpg",
     song_titles: [ "Flutter", "Josephine" ]
   },
   {
     name: "Movie Soundtracks",
     description: "Great songs from films",
     is_public: false,
-    cover_image_url: "music_files/soundtrack.jpg",
+    cover_image_url: "music_files/default_playlist.jpg",
     song_titles: [ "Blue Lamp", "All-Of-You" ]
   }
 ]

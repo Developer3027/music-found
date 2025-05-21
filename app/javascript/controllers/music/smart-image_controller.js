@@ -12,22 +12,22 @@ export default class extends Controller {
 
   connect() {
     // Only keep track of current song
-    window.addEventListener('audio:changed', this.handleSongChange.bind(this))
+    window.addEventListener("audio:changed", this.handleSongChange.bind(this))
   }
 
   disconnect() {
-    window.removeEventListener('audio:changed', this.handleSongChange)
+    window.removeEventListener("audio:changed", this.handleSongChange)
   }
 
   playRequest(e) {
     e.preventDefault()
-    const autoplay = localStorage.getItem('audioAutoplay') === 'true'
+    const autoplay = localStorage.getItem("audioAutoplay") === "true"
 
-    const currentBanner = this.bannerValue || 'music_files/home-banner.jpg'
-    const newBanner = e.target.dataset.banner || 'music_files/home-banner.jpg'
+    const currentBanner = this.bannerValue || "music_files/home-banner.jpg"
+    const newBanner = e.target.dataset.banner || "music_files/home-banner.jpg"
     const updateBanner = currentBanner !== newBanner
 
-    window.dispatchEvent(new CustomEvent('player:play-requested', {
+    window.dispatchEvent(new CustomEvent("player:play-requested", {
       detail: {
         url: this.urlValue,
         title: this.titleValue,
@@ -44,9 +44,9 @@ export default class extends Controller {
   handleSongChange(e) {
     // Only highlight if this is the current song
     if (e.detail.url === this.urlValue) {
-      this.playButtonTarget.classList.add('border-lime-500')
+      this.playButtonTarget.classList.add("border-lime-500")
     } else {
-      this.playButtonTarget.classList.remove('border-lime-500')
+      this.playButtonTarget.classList.remove("border-lime-500")
     }
   }
 }
