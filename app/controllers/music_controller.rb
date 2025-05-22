@@ -1,6 +1,15 @@
 class MusicController < ApplicationController
   def index
     @songs = Song.all
+    @songs_data = @songs.map do |song|
+      {
+        id: song.id,
+        url: song.song_file_url,
+        title: song.title,
+        artist: song.artist.name,
+        banner: song.artist.image_url
+      }
+    end.to_json
   end
 
   def artists

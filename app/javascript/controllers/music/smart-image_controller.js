@@ -4,6 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["playButton"]
   static values = {
+    id: String,
     url: String,
     title: String,
     artist: String,
@@ -21,7 +22,7 @@ export default class extends Controller {
 
   playRequest(e) {
     e.preventDefault()
-    const autoplay = localStorage.getItem("audioAutoplay") === "true"
+    const playOnLoad = localStorage.getItem("audioPlayOnLoad") === "true"
 
     const currentBanner = this.bannerValue || "music_files/home-banner.jpg"
     const newBanner = e.target.dataset.banner || "music_files/home-banner.jpg"
@@ -29,17 +30,19 @@ export default class extends Controller {
 
     window.dispatchEvent(new CustomEvent("player:play-requested", {
       detail: {
+        id: this.idValue,
         url: this.urlValue,
         title: this.titleValue,
         artist: this.artistValue,
         banner: this.bannerValue,
-        autoplay: autoplay,
+        playOnLoad: playOnLoad,
         updateBanner: updateBanner
       }
     }))
 
     this.currentUrl = this.urlValue
   }
+
 
   handleSongChange(e) {
     // Only highlight if this is the current song

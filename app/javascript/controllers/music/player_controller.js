@@ -25,6 +25,15 @@ export default class extends Controller {
   ]
 
   /**
+   * Controller Values
+   * @type {Object}
+   */
+  static values = {
+    autoAdvance: { type: Boolean, default: false },
+  }
+
+
+  /**
    * Current track URL reference
    * @type {?string}
    */
@@ -39,8 +48,41 @@ export default class extends Controller {
    * Sets up WaveSurfer instance and event listeners
    */
   connect() {
-    this.initializeWaveSurfer()
-    this.setupEventListeners()
+    this.initializeWaveSurfer();
+    this.setupEventListeners();
+  
+    // 1. Initialize playback state from localStorage
+    const autoAdvance = localStorage.getItem('playerAutoAdvance') === 'true';
+    this.autoAdvanceValue = autoAdvance;
+
+    const playOnLoad = localStorage.getItem('audioPlayOnLoad') === 'true';
+    this.playOnLoadValue = playOnLoad;
+    
+    // 2. Initialize queue state
+    this.currentQueue = [];
+    this.currentIndex = -1;
+    this.currentUrl = null;
+  
+    // 3. Sync initial states
+    document.dispatchEvent(new CustomEvent("player:auto-advance:changed", {
+      detail: { enabled: this.autoAdvanceValue }
+    }));
+
+    document.dispatchEvent(new CustomEvent("player:play-on-load:changed", {
+      detail: { enabled: this.playOnLoadValue }
+    }));
+  
+    // 4. Queue listener remains important!
+    document.addEventListener("player:queue:updated", (event) => {
+      
+      // Improved queue update with validation
+      this.currentQueue = Array.isArray(event.detail.queue) ? event.detail.queue : [];
+      
+      // More robust index finding
+      this.currentIndex = this.currentQueue.findIndex(song => {
+        return song?.url === this.currentUrl;
+      });
+    });
   }
 
   /**
@@ -112,9 +154,31 @@ export default class extends Controller {
    * Listens for external playback commands
    */
   setupEventListeners() {
-    window.addEventListener("player:play-requested", this.handlePlayRequest.bind(this))
-    document.addEventListener("player:play", () => this.wavesurfer.play())
-    document.addEventListener("player:pause", () => this.wavesurfer.pause())
+    // Existing listeners
+    window.addEventListener("player:play-requested", this.handlePlayRequest.bind(this));
+    document.addEventListener("player:play", () => this.wavesurfer.play());
+    document.addEventListener("player:pause", () => this.wavesurfer.pause());
+
+    document.addEventListener("player:auto-advance:changed", (event) => {
+      this.autoAdvanceValue = event.detail.enabled
+    })
+
+    document.addEventListener("player:play-on-load:changed", (event) => {
+      this.playOnLoadValue = event.detail.enabled
+    })
+  
+    // Add the queue update listener
+    document.addEventListener("player:queue:updated", (event) => {
+      this.currentQueue = event.detail.queue;
+      
+      // Sync index if we're already playing a song
+      if (this.currentUrl) {
+        const currentSong = this.currentQueue.find(song => song.url === this.currentUrl);
+        if (currentSong) {
+          this.setCurrentIndex(currentSong.id);
+        }
+      }
+    });
   }
 
   // ========================
@@ -155,9 +219,14 @@ export default class extends Controller {
    */
   handleTrackEnd() {
     this.handlePause()
+    this.resetPlayback()
     window.dispatchEvent(new CustomEvent("audio:ended", {
       detail: { url: this.currentUrl }
     }))
+
+    if (this.autoAdvanceValue && this.currentQueue.length > 0) {
+      this.playNext()
+    }
   }
 
   /**
@@ -182,16 +251,17 @@ export default class extends Controller {
    * @param {Event} e - Custom play event containing track details
    */
   handlePlayRequest(e) {
-    console.log("handlePlayRequest: ", e.detail)
     try {
-      const { url, title, artist, banner, autoplay = false, updateBanner } = e.detail
+      const { id, url, title, artist, banner, playOnLoad = false, updateBanner } = e.detail
+
+      this.setCurrentIndex(id)
 
       if (updateBanner !== false) {
         this.updateBanner({ banner, title, artist })
       }
       
       if (!this.wavesurfer || this.currentUrl !== url) {
-        this.loadTrack(url, autoplay)
+        this.loadTrack(url, playOnLoad)
       } else {
         this.togglePlayback()
       }
@@ -200,6 +270,58 @@ export default class extends Controller {
       this.handleAudioError()
     }
   }
+
+  /**
+   * Dispatch play request for a song
+   * @param {Object} song - Song object
+   */
+  dispatchPlayRequest(song) {
+    window.dispatchEvent(new CustomEvent("player:play-requested", {
+      detail: {
+        url: song.url,
+        title: song.title,
+        artist: song.artist,
+        banner: song.banner,
+        autoplay: true,
+        updateBanner: true
+      }
+    }))
+  }
+
+  /**
+   * Play the next song in queue
+   */
+  playNext() {
+    if (this.currentQueue.length === 0) return
+    
+    this.currentIndex = (this.currentIndex + 1) % this.currentQueue.length
+    const nextSong = this.currentQueue[this.currentIndex]
+    this.playSongFromQueue(nextSong)
+  }
+
+  playPrevious() {
+    if (this.currentQueue.length === 0) return
+    
+    this.currentIndex = (this.currentIndex - 1 + this.currentQueue.length) % this.currentQueue.length
+    const prevSong = this.currentQueue[this.currentIndex]
+    this.playSongFromQueue(prevSong)
+  }
+
+  playSongFromQueue(song) {
+    try {
+      this.updateBanner({
+        banner: song.banner,
+        title: song.title,
+        artist: song.artist
+      })
+      
+      this.loadTrack(song.url, true) // Always autoplay when advancing
+    } catch (error) {
+      console.error("Error playing from queue:", error)
+      this.handleAudioError()
+    }
+  }
+
 
   /**
    * Toggle between play and pause states
@@ -215,17 +337,16 @@ export default class extends Controller {
   /**
    * Load a new audio track
    * @param {string} url - Audio file URL
-   * @param {boolean} [autoplay=false] - Whether to autoplay when loaded
+   * @param {boolean} [playOnLoad=false] - Whether to playOnLoad when loaded
    */
-  loadTrack(url, autoplay = false) {
-    console.log("load url: ", url)
+  loadTrack(url, playOnLoad = false) {
     try {
       this.resetPlayback()
       this.showLoadingIndicator()
       this.dispatchTrackChange(url)
       
       this.wavesurfer.load(url)
-      this.setupAutoplay(autoplay)
+      this.setupPlayOnLoad(playOnLoad)
     } catch (error) {
       console.error("Error loading track:", error)
       this.handleAudioError()
@@ -250,14 +371,47 @@ export default class extends Controller {
   }
 
   /**
-   * Configure autoplay if requested
-   * @param {boolean} autoplay - Whether to autoplay
+   * Configure playOnLoad if requested
+   * @param {boolean} playOnLoad - Whether to playOnLoad
    */
-  setupAutoplay(autoplay) {
-    if (autoplay) {
+  setupPlayOnLoad(playOnLoad) {
+    if (playOnLoad) {
       this.wavesurfer.once("ready", () => {
         this.wavesurfer.play()
       })
+    }
+  }
+
+  /**
+   * Toggle autoAdvance state
+   */
+  toggleAutoAdvance() {
+    this.autoAdvanceValue = !this.autoAdvanceValue
+    this.updateAutoAdvanceUI()
+    
+    // Dispatch event to inform other components
+    document.dispatchEvent(new CustomEvent("player:auto-advance:changed", {
+      detail: { enabled: this.autoAdvanceValue }
+    }))
+  }
+
+  // Set the current index in the queue
+  // Use selected song ID to relate to position in queue
+  setCurrentIndex(songId) {
+    if (!this.currentQueue || this.currentQueue.length === 0) {
+      console.warn("Cannot set index for empty queue");
+      this.currentIndex = -1;
+      return;
+    };
+    
+    // Find the index by matching ID
+    const index = this.currentQueue.findIndex(song => song.id.toString() === songId.toString());
+    
+    if (index >= 0) {
+      this.currentIndex = index;
+    } else {
+      console.warn("Song ID not found in queue:", songId);
+      this.currentIndex = 0; // Fallback to first song
     }
   }
 
@@ -292,6 +446,20 @@ export default class extends Controller {
         subtitle: artist || "Unknown Artist"
       }
     }))
+  }
+
+  /**
+   * Update autoplay button UI
+   */
+  updateAutoAdvanceUI() {
+    const btn = this.element.querySelector("#autoAdvance-toggle")
+    if (this.autoAdvanceValue) {
+      btn.classList.add("text-green-400")
+      btn.classList.remove("text-gray-400")
+    } else {
+      btn.classList.add("text-gray-400")
+      btn.classList.remove("text-green-400")
+    }
   }
 
   // ========================
@@ -341,6 +509,15 @@ export default class extends Controller {
   hideLoadingIndicator() {
     this.loadingProgressTarget.style.width = "0%"
     this.loadingProgressTarget.classList.remove("transition-none")
+  }
+
+  /**
+   * Set the current play queue
+   * @param {Array} queue - Array of song objects
+   */
+  setQueue(queue) {
+    this.currentQueue = queue
+    this.currentIndex = queue.findIndex(song => song.url === this.currentUrl)
   }
 
   // ========================

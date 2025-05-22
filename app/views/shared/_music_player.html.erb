@@ -23,10 +23,7 @@
 
       <div class="flex items-center">
         <!-- Replace the old buttons with: -->
-        <%= render "music/components/player/play_pause_controls", playing: @playing %>
-        
-        <!-- Replace autoplay toggle with: -->
-        <%= render "music/components/player/autoplay_toggle" %>
+        <%= render "music/components/player/playback_controls", playing: @playing %>
       </div>
     </div>
     
