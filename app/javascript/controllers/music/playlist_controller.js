@@ -4,54 +4,76 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["list"]
   static values = { 
-    currentSongId: Number,
+    songs: String,
+    playlistId: String,
     banner: String,
+    currentSongId: Number
   }
 
   connect() {
+    // Initialize playlist queue
+    this.songsArray = this.parseSongs()
+    this.updatePlayerQueue()
+    
+    // Set up event listeners
     window.addEventListener("audio:changed", this.handleSongChange.bind(this))
-    document.addEventListener("playlist:play-next", this.playNext.bind(this))
-    document.addEventListener("playlist:play-previous", this.playPrevious.bind(this))
   }
 
   disconnect() {
     window.removeEventListener("audio:changed", this.handleSongChange)
-    document.removeEventListener("playlist:play-next", this.playNext)
-    document.removeEventListener("playlist:play-previous", this.playPrevious)
   }
 
-  selectSong(e) {
-    e.preventDefault()
-    const autoplay = localStorage.getItem("audioAutoplay") === "true"
-    const item = e.currentTarget
-
-    const currentBanner = this.bannerValue || "music_files/home-banner.jpg"
-    const newBanner = e.target.dataset.banner || "music_files/home-banner.jpg"
-    const updateBanner = currentBanner !== newBanner
-
-    const songData = {
-      url: item.dataset.musicPlaylistUrlValue,
-      title: item.dataset.musicPlaylistTitleValue,
-      artist: item.dataset.musicPlaylistArtistValue,
-      banner: this.bannerValue,
-      id: item.dataset.musicPlaylistSongIdValue,
-      autoplay: autoplay,
-      updateBanner: updateBanner
+  // Parse the songs JSON data
+  parseSongs() {
+    try {
+      const parsed = JSON.parse(this.songsValue)
+      return Array.isArray(parsed) ? parsed : []
+    } catch (error) {
+      console.error("Playlist songs parsing failed:", error)
+      return []
     }
+  }
 
-    //this.highlightSong(item)
-
-    this.currentSongIdValue = parseInt(songData.id)
-
-    window.dispatchEvent(new CustomEvent("player:play-requested", {
+  // Update the player's queue with our playlist songs
+  updatePlayerQueue() {
+    document.dispatchEvent(new CustomEvent("player:queue:set", {
       detail: { 
-        ...songData, 
-        autoplay: autoplay,
-        //updateBanner: true // Explicitly set this
+        queue: [...this.songsArray],
+        context: `playlist:${this.playlistIdValue}`
       }
     }))
   }
 
+  // Handle song selection from the playlist
+  selectSong(e) {
+    e.preventDefault()
+    
+    const item = e.currentTarget
+    const playOnLoad = localStorage.getItem("audioPlayOnLoad") === "true"
+
+    // Find the full song data from our parsed array
+    const songId = item.dataset.musicPlaylistSongIdParam
+    const songData = this.songsArray.find(song => song.id.toString() === songId.toString())
+
+    if (!songData) {
+      console.error("Song data not found for ID:", songId)
+      return
+    }
+
+    // Update current song ID
+    this.currentSongIdValue = parseInt(songId)
+
+    // Dispatch play event with all song data
+    window.dispatchEvent(new CustomEvent("player:play-requested", {
+      detail: { 
+        ...songData,
+        playOnLoad: playOnLoad,
+        updateBanner: true
+      }
+    }))
+  }
+
+  // Update UI when song changes
   handleSongChange(e) {
     const url = e.detail.url
     this.listTarget.querySelectorAll('.playlist-item').forEach(item => {
@@ -62,37 +84,5 @@ export default class extends Controller {
         item.classList.remove('bg-gray-700', 'text-white')
       }
     })
-  }
-
-  // highlightSong(element) {
-  //   this.listTarget.querySelectorAll('.playlist-item').forEach(el => {
-  //     el.classList.remove('bg-gray-700', 'text-white')
-  //   })
-  //   element.classList.add('bg-gray-700', 'text-white')
-  // }
-
-  playNext() {
-    const items = Array.from(this.listTarget.querySelectorAll('.playlist-item'))
-    if (items.length === 0) return
-    
-    const currentIndex = items.findIndex(item => 
-      parseInt(item.dataset.musicPlaylistSongIdParam) === this.currentSongIdValue
-    )
-    
-    const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % items.length
-    items[nextIndex].click()
-  }
-
-  playPrevious() {
-    const items = Array.from(this.listTarget.querySelectorAll('.playlist-item'))
-    if (items.length === 0) return
-    
-    const currentIndex = items.findIndex(item => 
-      parseInt(item.dataset.musicPlaylistSongIdParam) === this.currentSongIdValue
-    )
-    
-    const prevIndex = currentIndex === -1 ? 0 : 
-                     (currentIndex - 1 + items.length) % items.length
-    items[prevIndex].click()
   }
 }

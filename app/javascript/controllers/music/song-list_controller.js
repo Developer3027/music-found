@@ -45,8 +45,11 @@ export default class extends Controller {
       this.songsArray = []
     }
     
-    document.dispatchEvent(new CustomEvent("player:queue:updated", {
-      detail: { queue: [...this.songsArray] } // Spread operator clones array
+    document.dispatchEvent(new CustomEvent("player:queue:set", {
+      detail: { 
+        queue: [...this.songsArray],
+        context: 'all-songs'
+      }
     }))
   }
 }

@@ -31,3 +31,5 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+Looking at playlist. Smart image and queue works, so I was looking at playlist the same way. 

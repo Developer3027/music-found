@@ -39,6 +39,8 @@ export default class extends Controller {
    */
   currentUrl = null
 
+  currentContext = null
+
   // ========================
   //  Lifecycle Methods
   // ========================
@@ -49,40 +51,29 @@ export default class extends Controller {
    */
   connect() {
     this.initializeWaveSurfer();
-    this.setupEventListeners();
-  
-    // 1. Initialize playback state from localStorage
+    this.setupEventListeners(); // This will setup ALL listeners
+    
+    // Initialize state from localStorage
     const autoAdvance = localStorage.getItem('playerAutoAdvance') === 'true';
     this.autoAdvanceValue = autoAdvance;
-
+  
     const playOnLoad = localStorage.getItem('audioPlayOnLoad') === 'true';
     this.playOnLoadValue = playOnLoad;
     
-    // 2. Initialize queue state
+    // Initialize queue state
     this.currentQueue = [];
     this.currentIndex = -1;
     this.currentUrl = null;
+    this.currentContext = null; // Add this if using playlist context
   
-    // 3. Sync initial states
+    // Sync initial states
     document.dispatchEvent(new CustomEvent("player:auto-advance:changed", {
       detail: { enabled: this.autoAdvanceValue }
     }));
-
+  
     document.dispatchEvent(new CustomEvent("player:play-on-load:changed", {
       detail: { enabled: this.playOnLoadValue }
     }));
-  
-    // 4. Queue listener remains important!
-    document.addEventListener("player:queue:updated", (event) => {
-      
-      // Improved queue update with validation
-      this.currentQueue = Array.isArray(event.detail.queue) ? event.detail.queue : [];
-      
-      // More robust index finding
-      this.currentIndex = this.currentQueue.findIndex(song => {
-        return song?.url === this.currentUrl;
-      });
-    });
   }
 
   /**
@@ -154,31 +145,35 @@ export default class extends Controller {
    * Listens for external playback commands
    */
   setupEventListeners() {
-    // Existing listeners
+    // Playback control listeners
     window.addEventListener("player:play-requested", this.handlePlayRequest.bind(this));
     document.addEventListener("player:play", () => this.wavesurfer.play());
     document.addEventListener("player:pause", () => this.wavesurfer.pause());
-
-    document.addEventListener("player:auto-advance:changed", (event) => {
-      this.autoAdvanceValue = event.detail.enabled
-    })
-
-    document.addEventListener("player:play-on-load:changed", (event) => {
-      this.playOnLoadValue = event.detail.enabled
-    })
   
-    // Add the queue update listener
-    document.addEventListener("player:queue:updated", (event) => {
-      this.currentQueue = event.detail.queue;
+    // Settings listeners
+    document.addEventListener("player:auto-advance:changed", (event) => {
+      this.autoAdvanceValue = event.detail.enabled;
+    });
+  
+    document.addEventListener("player:play-on-load:changed", (event) => {
+      this.playOnLoadValue = event.detail.enabled;
+    });
+  
+    // Single queue management listener
+    document.addEventListener("player:queue:set", (event) => {
+      this.currentQueue = Array.isArray(event.detail.queue) ? event.detail.queue : [];
+      this.currentContext = event.detail.context || null;
       
-      // Sync index if we're already playing a song
+      // Sync index if current song is in the new queue
       if (this.currentUrl) {
-        const currentSong = this.currentQueue.find(song => song.url === this.currentUrl);
-        if (currentSong) {
-          this.setCurrentIndex(currentSong.id);
-        }
+        this.currentIndex = this.currentQueue.findIndex(
+          song => song.url === this.currentUrl
+        );
       }
     });
+  
+    // Add navigation listener if using playlist context
+    this.setupNavigationListeners();
   }
 
   // ========================
@@ -240,6 +235,22 @@ export default class extends Controller {
         url: this.currentUrl 
       }
     }))
+  }
+
+  setupNavigationListeners() {
+    document.addEventListener("turbo:before-render", (event) => {
+      if (!event.detail.newBody.querySelector('[data-controller="music--playlist"]')) {
+        this.clearPlaylistContext()
+      }
+    })
+  }
+  
+  clearPlaylistContext() {
+    if (this.currentContext?.startsWith('playlist')) {
+      this.currentQueue = []
+      this.currentContext = null
+      this.currentIndex = -1
+    }
   }
 
   // ========================
@@ -327,6 +338,8 @@ export default class extends Controller {
    * Toggle between play and pause states
    */
   togglePlayback() {
+    if (!this.wavesurferReady) return
+
     this.wavesurfer.playPause()
   }
 
@@ -340,11 +353,16 @@ export default class extends Controller {
    * @param {boolean} [playOnLoad=false] - Whether to playOnLoad when loaded
    */
   loadTrack(url, playOnLoad = false) {
+    if (!this.wavesurferReady) {
+      console.warn("WaveSurfer not ready, one second..")
+      //if (!this.wavesurferReady) return
+    }
+
     try {
       this.resetPlayback()
       this.showLoadingIndicator()
       this.dispatchTrackChange(url)
-      
+
       this.wavesurfer.load(url)
       this.setupPlayOnLoad(playOnLoad)
     } catch (error) {
@@ -357,6 +375,8 @@ export default class extends Controller {
    * Reset playback state before loading new track
    */
   resetPlayback() {
+    if (!this.wavesurferReady) return
+
     this.wavesurfer?.pause()
     this.wavesurfer?.setTime(0)
   }

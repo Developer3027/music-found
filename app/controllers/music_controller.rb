@@ -35,7 +35,24 @@ end
 def playlist
   @playlist = Playlist.find(params[:id])
   @songs = @playlist.songs.order("playlist_songs.position").includes(:artist, :album)
-  render partial: "music/turbo_frames/playlist"
+  @songs_data = @songs.map do |song|
+    {
+      id: song.id,
+      url: song.song_file_url,
+      title: song.title,
+      artist: song.artist.name,
+      banner: song.artist.image_url,
+      # Add playlist context if needed
+      playlist_id: @playlist.id
+    }
+  end.to_json
+  render partial: "music/turbo_frames/playlist",
+         locals: {
+           playlist: @playlist,
+           songs: @songs,
+           songs_data: @songs_data
+         },
+         formats: [ :html ]
 end
 
   def about
