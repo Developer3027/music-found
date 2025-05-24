@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 scope :music do
   get "/", to: "music#index", as: :music
   get "artists", to: "music#artists", as: :music_artists
+  get "genres", to: "music#genres", as: :music_genres
   get "playlists", to: "music#playlists", as: :music_playlists
   get "playlists/:id", to: "music#playlist", as: :music_playlist
   get "about", to: "music#about", as: :music_about

@@ -51,6 +51,19 @@
   .playlist-item.active {
     background-color: theme('colors.gray.700');
   }
+  
+  .letter-heading {
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .artist-card {
+    transition: transform 0.2s;
+  }
+  
+  .artist-card:hover {
+    transform: translateY(-2px);
+  }
 
  .kodchasan-extralight {
   font-family: "Kodchasan", serif;

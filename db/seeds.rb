@@ -217,6 +217,92 @@ artists_data = [
         ]
       }
     ]
+  },
+  {
+    name: "crazy town",
+    image_url: "music_files/crazy_town/crazy-town-artist.jpeg",
+    albums: [
+      {
+        title: "the brimstone sluggers",
+        release_year: 2015,
+        genre_name: "Metal",
+        cover_art_url: "music_files/crazy_town/the-brimstone-sluggers.png",
+        songs: [
+          {
+            title: "back pack",
+            song_image_url: "music_files/crazy_town/the-brimstone-sluggers.png",
+            song_file_url: "music_files/crazy_town/backpack.mp3"
+          },
+          {
+            title: "come inside",
+            song_image_url: "music_files/crazy_town/the-brimstone-sluggers.png",
+            song_file_url: "music_files/crazy_town/come_inside.mp3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: "rootkit",
+    image_url: "music_files/rootkit/rootkit-artist.jpeg",
+    albums: [
+      {
+        title: "do it",
+        release_year: 2014,
+        genre_name: "Electronic",
+        cover_art_url: "music_files/rootkit/do-it.png",
+        songs: [
+          {
+            title: "back pack",
+            song_image_url: "music_files/rootkit/do-it.png",
+            song_file_url: "music_files/rootkit/do it.mp3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: "TSS",
+    image_url: "music_files/tss/tss-artist.jpeg",
+    albums: [
+      {
+        title: "killing me",
+        release_year: 2024,
+        genre_name: "Metal",
+        cover_art_url: "music_files/tss/killing-me.jpeg",
+        songs: [
+          {
+            title: "fantasize",
+            song_image_url: "music_files/tss/killing-me.jpeg",
+            song_file_url: "music_files/tss/fantasize.mp3"
+          },
+          {
+            title: "killing me",
+            song_image_url: "music_files/tss/killing-me.jpeg",
+            song_file_url: "music_files/tss/killing me.mp3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: "dark new day",
+    image_url: "music_files/dark-new-day/twelve years of silence.png",
+    albums: [
+      {
+        title: "twelve years of silence",
+        release_year: 2005,
+        genre_name: "Rock",
+        cover_art_url: "music_files/dark-new-day/twelve years of silence.png",
+        songs: [
+          {
+            title: "brother",
+            song_image_url: "music_files/dark-new-day/twelve years of silence.png",
+            song_file_url: "music_files/dark-new-day/brother.mp3"
+          }
+        ]
+      }
+    ]
   }
 ]
 

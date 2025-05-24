@@ -44,7 +44,6 @@ export default class extends Controller {
       console.error("Invalid songsArray - resetting")
       this.songsArray = []
     }
-    
     document.dispatchEvent(new CustomEvent("player:queue:updated", {
       detail: { queue: [...this.songsArray] } // Spread operator clones array
     }))
