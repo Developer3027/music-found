@@ -47,9 +47,9 @@ export default class extends Controller {
   handleSongChange(e) {
     // Only highlight if this is the current song
     if (e.detail.url === this.urlValue) {
-      this.playButtonTarget.classList.add("border-lime-500")
+      this.playButtonTarget.classList.add("border-purple-500", "bg-purple-50")
     } else {
-      this.playButtonTarget.classList.remove("border-lime-500")
+      this.playButtonTarget.classList.remove("border-purple-500", "bg-purple-50")
     }
   }
 }

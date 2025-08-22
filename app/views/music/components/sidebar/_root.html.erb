@@ -1,8 +1,18 @@
-<div class="w-40 min-h-screen bg-[#91A2B4] text-[#1E1E1E] top-0 left-0 relative" data-controller="sidebar" data-action="click@window->sidebar#closeMenu">
-  <nav class="flex flex-col justify-between h-fit">
+<div class="fixed top-0 left-0 z-40 h-screen bg-white text-gray-900 transition-all duration-300 ease-in-out
+            w-60 lg:w-60 md:w-16
+            -translate-x-full md:translate-x-0
+            shadow-lg md:shadow-none border-r border-gray-200"
+     data-sidebar-target="sidebar">
+
+  <nav class="flex flex-col justify-between h-full overflow-y-auto">
     <%= render 'music/components/sidebar/header' %>
     <%= render 'music/components/sidebar/dropdown_menu' %>
     <%= render 'music/components/sidebar/main_nav' %>
     <%#= render 'music/components/sidebar/most_played', songs: @songs %>
   </nav>
 </div>
+
+<!-- Mobile Overlay -->
+<div class="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden opacity-0 pointer-events-none transition-opacity duration-300"
+     data-sidebar-target="overlay"
+     data-action="click->sidebar#closeMobileMenu"></div>

@@ -1,14 +1,12 @@
 <!-- Current Index Content -->
-<div class="w-full flex flex-col m-auto  text-[#1E1E1E]">
-  <h2 class="kanit font-medium mx-4 py-2">All Songs</h2>
-  <hr class="mb-3 mx-4">
-  <div data-controller="music--song-list" 
+<div class="w-full flex flex-col m-auto text-gray-900">
+  <h2 class="kanit font-semibold text-xl mx-4 py-4 text-gray-900">All Songs</h2>
+  <hr class="mb-4 mx-4 border-gray-200">
+  <div data-controller="music--song-list"
         data-music--song-list-songs-value="<%= @songs_data %>"
-        class="flex flex-wrap justify-center items-start p-4 gap-4">
+        class="flex flex-col p-4 space-y-3">
     <% @songs.each do |song| %>
-      <div class="m-auto">
-        <%= render partial: "music/components/smart-image", locals: { controller_name: "smart-image", song: song } %>
-      </div>
+      <%= render partial: "music/components/horizontal-song-card", locals: { song: song } %>
     <% end %>
   </div>
 </div>

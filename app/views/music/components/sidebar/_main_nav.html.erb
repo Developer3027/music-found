@@ -1,12 +1,19 @@
-<div class="flex flex-col p-4">
-  <h2 class="kanit">Menu</h2>
-  <hr class="mb-3">
-  <ul class="kanit">
-    <%= sidebar_link_to "Home", music_index_path, "home", data: { turbo_frame: "music-frame" } %>
+<div class="flex flex-col p-4 md:p-2 lg:p-4">
+  <h2 class="kanit font-semibold text-lg mb-4 hidden lg:block md:hidden block text-gray-900">Discover</h2>
+  <ul class="kanit space-y-1">
+    <%= sidebar_link_to "Feed", music_index_path, "feed", data: { turbo_frame: "music-frame" } %>
     
-    <%= sidebar_link_to "Artist", music_artists_path, "crown", data: { turbo_frame: "music-frame" } %>
+    <%= sidebar_link_to "Trending", music_index_path, "trending", data: { turbo_frame: "music-frame" } %>
 
-    <%= sidebar_link_to "Genres", music_genres_path, "tag", data: { turbo_frame: "music-frame" } %>
+    <%= sidebar_link_to "Explore", music_genres_path, "explore", data: { turbo_frame: "music-frame" } %>
+
+  </ul>
+  
+  <h2 class="kanit font-semibold text-lg mb-4 mt-8 hidden lg:block md:hidden block text-gray-900">Your Music</h2>
+  <ul class="kanit space-y-1">
+    <%= sidebar_link_to "Library", music_playlists_path, "library", data: { turbo_frame: "music-frame" } %>
+    
+    <%= sidebar_link_to "Artists", music_artists_path, "crown", data: { turbo_frame: "music-frame" } %>
 
   </ul>
 </div>

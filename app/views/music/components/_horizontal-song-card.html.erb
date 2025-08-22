@@ -1,0 +1,60 @@
+<div data-controller="music--smart-image"
+     data-music--smart-image-id-value="<%= song.id %>"
+     data-music--smart-image-url-value="<%= song.song_file_url %>"
+     data-music--smart-image-title-value="<%= song.title %>"
+     data-music--smart-image-artist-value="<%= song.artist.name %>"
+     data-music--smart-image-banner-value="<%= song.artist.image_url %>"
+     class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer border border-gray-100 hover:border-purple-200 hover:bg-purple-50">
+  
+  <div class="flex items-center p-3 sm:p-4 space-x-3 sm:space-x-4"
+       data-music--smart-image-target="playButton"
+       data-action="click->music--smart-image#playRequest">
+    
+    <!-- Artwork Section -->
+    <div class="flex-shrink-0">
+      <img class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-cover border-2 border-gray-200 hover:border-purple-300 transition-colors duration-200"
+           src="<%= song.song_image_url.present? ? song.song_image_url : (song.album&.cover_art_url.present? ? song.album.cover_art_url : song.artist.image_url) %>"
+           alt="<%= song.title %>" />
+    </div>
+    
+    <!-- Content Section -->
+    <div class="flex-1 min-w-0">
+      <!-- Primary Info -->
+      <div class="mb-1">
+        <h3 class="text-base sm:text-lg font-semibold text-gray-900 truncate hover:text-purple-600 transition-colors">
+          <%= song.title %>
+        </h3>
+        <p class="text-sm sm:text-base text-gray-600 truncate">
+          <%= song.artist.name %>
+        </p>
+      </div>
+      
+      <!-- Secondary Info - Hidden on very small screens -->
+      <div class="space-y-1 hidden sm:block">
+        <% if song.album.present? %>
+          <p class="text-sm text-gray-500 truncate">
+            <span class="font-medium">Album:</span> <%= song.album.title %>
+            <% if song.album.release_year.present? %>
+              <span class="text-gray-400">(<%= song.album.release_year %>)</span>
+            <% end %>
+          </p>
+        <% end %>
+        
+        <% if song.genres.any? %>
+          <p class="text-sm text-gray-500 truncate">
+            <span class="font-medium">Genres:</span> <%= song.genres.pluck(:name).join(', ') %>
+          </p>
+        <% end %>
+      </div>
+    </div>
+    
+    <!-- Play Indicator -->
+    <div class="flex-shrink-0">
+      <div class="w-8 h-8 sm:w-6 sm:h-6 rounded-full bg-purple-100 hover:bg-purple-200 flex items-center justify-center opacity-70 hover:opacity-100 transition-all duration-200 touch-manipulation">
+        <svg class="w-4 h-4 sm:w-3 sm:h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M8 5v10l8-5-8-5z"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>

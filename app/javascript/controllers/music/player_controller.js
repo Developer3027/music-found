@@ -105,8 +105,8 @@ export default class extends Controller {
     try {
       this.wavesurfer = WaveSurfer.create({
         container: this.waveformTarget,
-        waveColor: "#00B1D1",
-        progressColor: "#01DFB6",
+        waveColor: "#e5e7eb",
+        progressColor: "#c74bd3",
         height: 50,
         minPxPerSec: 50,
         hideScrollbar: true,
