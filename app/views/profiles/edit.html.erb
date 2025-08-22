@@ -1,0 +1,86 @@
+<div class="max-w-2xl mx-auto p-6">
+  <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4">
+      <h1 class="text-2xl font-bold text-white">Edit Profile</h1>
+    </div>
+
+    <!-- Form -->
+    <div class="p-6">
+      <%= form_with model: @user, url: profile_path, method: :patch, local: true, multipart: true, class: "space-y-6" do |form| %>
+        <% if @user.errors.any? %>
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <h3 class="text-red-800 font-medium mb-2">Please fix the following errors:</h3>
+            <ul class="text-red-700 text-sm space-y-1">
+              <% @user.errors.full_messages.each do |message| %>
+                <li>• <%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <!-- Profile Image -->
+        <div class="space-y-2">
+          <%= form.label :profile_image, class: "block text-sm font-medium text-gray-700" %>
+          <div class="flex items-center space-x-4">
+            <% if @user.profile_image.attached? %>
+              <%= image_tag @user.profile_image, class: "w-16 h-16 rounded-full object-cover" %>
+            <% else %>
+              <div class="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center">
+                <span class="text-lg font-bold text-gray-600"><%= @user.first_name&.first %><%= @user.last_name&.first %></span>
+              </div>
+            <% end %>
+            <%= form.file_field :profile_image, accept: "image/*", class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" %>
+          </div>
+          <p class="text-xs text-gray-500">Upload a profile picture (JPG, PNG, GIF)</p>
+        </div>
+
+        <!-- Name Fields -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <%= form.label :first_name, class: "block text-sm font-medium text-gray-700" %>
+            <%= form.text_field :first_name, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          </div>
+          <div class="space-y-2">
+            <%= form.label :last_name, class: "block text-sm font-medium text-gray-700" %>
+            <%= form.text_field :last_name, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          </div>
+        </div>
+
+        <!-- Username -->
+        <div class="space-y-2">
+          <%= form.label :username, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.text_field :username, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          <p class="text-xs text-gray-500">Your unique username (letters, numbers, and underscores only)</p>
+        </div>
+
+        <!-- Bio -->
+        <div class="space-y-2">
+          <%= form.label :bio, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.text_area :bio, rows: 4, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "Tell us about yourself..." %>
+          <p class="text-xs text-gray-500">Maximum 500 characters</p>
+        </div>
+
+        <!-- Location -->
+        <div class="space-y-2">
+          <%= form.label :location, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.text_field :location, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "City, Country" %>
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="space-y-2">
+          <%= form.label :date_of_birth, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.date_field :date_of_birth, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-between pt-6 border-t">
+          <%= link_to "Cancel", profile_path, class: "px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors" %>
+          <div class="space-x-3">
+            <%= form.submit "Update Profile", class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors font-medium" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

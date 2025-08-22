@@ -1,0 +1,41 @@
+<%= form_with(model: @playlist, local: true) do |form| %>
+  <% if form.object.errors.any? %>
+        <div>
+            <% form.object.errors.full_messages.each do |message|  %>
+            <div class="text-red-500"><%= message %></div>
+            <% end %>
+        </div>
+    <% end %>
+
+  <div class="">
+    <div class="border border-gray-100 rounded-sm p-2 mt-1">
+      <h2 class="text-xl font-medium text-gray-100 align-middle text-center p-2">Playlist Details</h2>
+      
+      <div class="flex justify-between items-center my-2">
+        <%= form.label :name, "Playlist Name", class: "w-52" %>
+        <%= form.text_field :name, class: "rounded-sm border border-slate-600 bg-gray-100 text-zinc-800 w-full", placeholder: "Enter playlist name" %>
+      </div>
+      
+      <div class="flex justify-between items-start my-2">
+        <%= form.label :description, class: "w-52 pt-2" %>
+        <%= form.text_area :description, class: "rounded-sm border border-slate-600 bg-gray-100 text-zinc-800 w-full", rows: 3, placeholder: "Describe your playlist (optional)" %>
+      </div>
+      
+      <div class="flex justify-between items-center my-2">
+        <%= form.label :cover_image_url, "Cover Image URL", class: "w-52" %>
+        <%= form.url_field :cover_image_url, class: "rounded-sm border border-slate-600 bg-gray-100 text-zinc-800 w-full", placeholder: "https://example.com/image.jpg (optional)" %>
+      </div>
+      
+      <div class="flex items-center my-4">
+        <%= form.check_box :is_public, class: "mr-2" %>
+        <%= form.label :is_public, "Make this playlist public", class: "text-gray-100" %>
+        <div class="text-sm text-gray-300 ml-2">(Others can discover and listen to public playlists)</div>
+      </div>
+    </div>
+    
+    <div class="flex gap-2 mt-4">
+      <%= form.submit "Create Playlist", class: "border border-gray-100 bg-slate-900 text-gray-100 rounded-sm px-6 py-2" %>
+      <%= link_to "Cancel", my_music_path, class: "border border-gray-300 bg-gray-200 text-gray-800 rounded-sm px-6 py-2", data: { turbo_frame: "music-frame" } %>
+    </div>
+  </div>
+<% end %>

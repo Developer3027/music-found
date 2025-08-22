@@ -1,29 +1,79 @@
 <!-- The dropdown menu -->
 <ul>
-  <li>
-    <%= link_to "MILK-00", "#", class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
-  </li>
-  <!-- Subtle separator with padding -->
-  <li class="border-t border-gray-200 my-1"></li>
-  <li>
-    <%= link_to "Add Playlist", "#", class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
-  </li>
-  <li>
-    <%= link_to "Add Song", "#", class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
-  </li>
-  <!-- More prominent separator with text -->
-  <li class="relative py-1">
-    <div class="absolute inset-0 flex items-center" aria-hidden="true">
-      <div class="w-full border-t border-gray-300"></div>
-    </div>
-    <div class="relative flex justify-center">
-      <span class="px-2 text-xs text-gray-500 bg-white rounded">Options</span>
-    </div>
-  </li>
-  <li>
-    <%= link_to "Settings", "#", class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
-  </li>
-  <li>
-    <%= link_to "About", music_about_path, data: { turbo_frame: "music-frame" }, class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
-  </li>
+  <% if user_signed_in? %>
+    <!-- User info section -->
+    <li class="px-4 py-2 border-b border-gray-200">
+      <div class="flex items-center space-x-3">
+        <div class="flex-shrink-0">
+          <%= user_avatar_or_initial(current_user) %>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-900 truncate">
+            <%= user_display_name(current_user) %>
+          </p>
+          <p class="text-xs text-gray-500 truncate">
+            <%= current_user.email %>
+          </p>
+        </div>
+      </div>
+    </li>
+    
+    <!-- User actions -->
+    <li>
+      <%= link_to "Profile", profile_path, class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
+    </li>
+    <li>
+      <%= link_to "Add Playlist", "#", class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
+    </li>
+    <li>
+      <%= link_to "Add Song", "#", class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
+    </li>
+    
+    <!-- Separator -->
+    <li class="relative py-1">
+      <div class="absolute inset-0 flex items-center" aria-hidden="true">
+        <div class="w-full border-t border-gray-300"></div>
+      </div>
+      <div class="relative flex justify-center">
+        <span class="px-2 text-xs text-gray-500 bg-white rounded">Options</span>
+      </div>
+    </li>
+    
+    <li>
+      <%= link_to "Settings", edit_profile_path, class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
+    </li>
+    <li>
+      <%= link_to "About", music_about_path, data: { turbo_frame: "music-frame" }, class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
+    </li>
+    
+    <!-- Logout -->
+    <li class="border-t border-gray-200 mt-1">
+      <%= button_to "Logout", destroy_user_session_path,
+          method: :delete,
+          data: { confirm: "Are you sure you want to logout?" },
+          class: "block px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-700" %>
+    </li>
+  <% else %>
+    <!-- Guest user options -->
+    <li>
+      <%= link_to "Sign Up", new_user_registration_path, class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4] font-medium" %>
+    </li>
+    <li>
+      <%= link_to "Login", new_user_session_path, class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4] font-medium" %>
+    </li>
+    
+    <!-- Separator -->
+    <li class="relative py-1">
+      <div class="absolute inset-0 flex items-center" aria-hidden="true">
+        <div class="w-full border-t border-gray-300"></div>
+      </div>
+      <div class="relative flex justify-center">
+        <span class="px-2 text-xs text-gray-500 bg-white rounded">Explore</span>
+      </div>
+    </li>
+    
+    <li>
+      <%= link_to "About", music_about_path, data: { turbo_frame: "music-frame" }, class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
+    </li>
+  <% end %>
 </ul>

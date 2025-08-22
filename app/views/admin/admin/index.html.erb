@@ -1,32 +1,163 @@
-<section class="flex flex-col justify-center items-center w-full text-zinc-50 mt-14">
-  <h1 class="text-2xl font-bold my-2">Admin Dashboard</h1>
-  <div class="flex justify-evenly items-start max-w-4xl w-full">
-    <!-- Left column small song cards -->
-    <div class="flex flex-col text-zinc-50 w-1/2">
-      <% @songs.each do |song| %>
-      <div class="flex justify-evenly items-center overflow-hidden border border-zinc-600 rounded-sm m-2 w-72">
-        <%= image_tag song.song_image, class: "w-12 me-2" %>
-        <span class="w-40"><%= song.title %></span>
-        <!-- Play -->
+<section class="flex flex-col w-full text-zinc-50 mt-8 px-4">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold">Admin Dashboard</h1>
+    <div class="text-sm text-zinc-400">
+      Welcome back, Admin
+    </div>
+    <%= button_to "Logout", destroy_admin_session_path,
+        method: :delete,
+        data: { confirm: "Are you sure you want to logout?" }, 
+        class: "bg-zinc-700 hover:bg-zinc-600 px-4 py-2 rounded-md transition-colors" %>
+  </div>
+
+  <!-- Statistics Overview -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Songs Statistics -->
+    <div class="bg-zinc-800 p-6 rounded-lg">
+      <div class="flex items-center justify-between">
         <div>
-          <%= render partial: "shared/preview", locals: { controller_name: "preview", song: song } %>
+          <p class="text-sm font-medium text-zinc-400">Total Songs</p>
+          <p class="text-2xl font-bold text-blue-400"><%= @song_count %></p>
         </div>
-        <!-- Menu -->
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 me-2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+        <div class="p-3 bg-blue-600/20 rounded-full">
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
           </svg>
         </div>
       </div>
-      <% end %>
     </div>
-    <div class="bg-zinc-800 w-1/2 my-2 rounded-sm p-2">
-      <div class="flex justify-around items-center w-full my-2">
-        <%= link_to "Add Song", new_admin_song_path, class: "flex justify-center items-center border border-pill-blue h-fit w-fit rounded-md px-4 py-1" %>
-        <%= link_to "List Songs", admin_songs_path, class: "flex justify-center items-center border border-pill-blue h-fit w-fit rounded-md px-4 py-1" %>
+
+    <!-- Users Statistics -->
+    <div class="bg-zinc-800 p-6 rounded-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-zinc-400">Total Users</p>
+          <p class="text-2xl font-bold text-green-400"><%= @user_count %></p>
+        </div>
+        <div class="p-3 bg-green-600/20 rounded-full">
+          <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+        </div>
       </div>
-      <p><%= pluralize(@song_count, 'song') %> stored.</p>
-      <p>Top played song:</p>
+    </div>
+
+    <!-- Active Users -->
+    <div class="bg-zinc-800 p-6 rounded-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-zinc-400">Active Users</p>
+          <p class="text-2xl font-bold text-yellow-400"><%= @active_users %></p>
+        </div>
+        <div class="p-3 bg-yellow-600/20 rounded-full">
+          <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Users This Week -->
+    <div class="bg-zinc-800 p-6 rounded-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-zinc-400">New This Week</p>
+          <p class="text-2xl font-bold text-purple-400"><%= @new_users_this_week %></p>
+        </div>
+        <div class="p-3 bg-purple-600/20 rounded-full">
+          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Song Management -->
+    <div class="bg-zinc-800 rounded-lg p-6">
+      <h2 class="text-xl font-semibold mb-4">Song Management</h2>
+      <div class="space-y-4">
+        <div class="flex justify-between items-center">
+          <span class="text-zinc-300">Total Songs</span>
+          <span class="font-semibold"><%= @song_count %></span>
+        </div>
+        <div class="flex gap-3">
+          <%= link_to "Add Song", new_admin_song_path,
+                     class: "flex-1 bg-blue-600 hover:bg-blue-700 text-center py-2 px-4 rounded-md transition-colors" %>
+          <%= link_to "Manage Songs", admin_songs_path,
+                     class: "flex-1 bg-zinc-700 hover:bg-zinc-600 text-center py-2 px-4 rounded-md transition-colors" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Management -->
+    <div class="bg-zinc-800 rounded-lg p-6">
+      <h2 class="text-xl font-semibold mb-4">User Management</h2>
+      <div class="space-y-4">
+        <div class="flex justify-between items-center">
+          <span class="text-zinc-300">Active Users</span>
+          <span class="font-semibold text-green-400"><%= @active_users %></span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-zinc-300">Banned Users</span>
+          <span class="font-semibold text-red-400"><%= @banned_users %></span>
+        </div>
+        <div class="flex gap-3">
+          <%= link_to "Manage Users", admin_users_path,
+                     class: "flex-1 bg-green-600 hover:bg-green-700 text-center py-2 px-4 rounded-md transition-colors" %>
+          <%= link_to "View Reports", "#",
+                     class: "flex-1 bg-zinc-700 hover:bg-zinc-600 text-center py-2 px-4 rounded-md transition-colors" %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Recent Songs -->
+    <div class="bg-zinc-800 rounded-lg p-6">
+      <h2 class="text-xl font-semibold mb-4">Recent Songs</h2>
+      <div class="space-y-3">
+        <% @songs.limit(5).each do |song| %>
+          <div class="flex items-center space-x-3 p-3 bg-zinc-700 rounded-md">
+            <%= image_tag song.song_image, class: "w-12 h-12 rounded object-cover" if song.song_image.attached? %>
+            <div class="flex-1">
+              <p class="font-medium text-zinc-50"><%= song.title %></p>
+              <p class="text-sm text-zinc-400">by <%= song.artist&.name || 'Unknown Artist' %></p>
+            </div>
+            <div class="flex space-x-2">
+              <%= render partial: "shared/preview", locals: { controller_name: "preview", song: song } if defined?(render) %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="bg-zinc-800 rounded-lg p-6">
+      <h2 class="text-xl font-semibold mb-4">Recent Users</h2>
+      <div class="space-y-3">
+        <% @recent_users.each do |user| %>
+          <div class="flex items-center space-x-3 p-3 bg-zinc-700 rounded-md">
+            <% if user.profile_image.attached? %>
+              <%= image_tag user.profile_image, class: "w-10 h-10 rounded-full object-cover" %>
+            <% else %>
+              <div class="w-10 h-10 rounded-full bg-zinc-600 flex items-center justify-center">
+                <span class="text-sm font-medium text-zinc-300"><%= user.first_name&.first %><%= user.last_name&.first %></span>
+              </div>
+            <% end %>
+            <div class="flex-1">
+              <p class="font-medium text-zinc-50"><%= user.full_name %></p>
+              <p class="text-sm text-zinc-400">@<%= user.username %></p>
+            </div>
+            <div class="text-sm text-zinc-400">
+              <%= time_ago_in_words(user.created_at) %> ago
+            </div>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
 </section>

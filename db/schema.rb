@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_20_204805) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_22_183803) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -96,6 +96,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_20_204805) do
     t.string "cover_image_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_playlists_on_user_id"
   end
 
   create_table "song_genres", force: :cascade do |t|
@@ -115,8 +117,44 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_20_204805) do
     t.datetime "updated_at", null: false
     t.bigint "album_id", null: false
     t.bigint "artist_id", null: false
+    t.bigint "user_id"
     t.index ["album_id"], name: "index_songs_on_album_id"
     t.index ["artist_id"], name: "index_songs_on_artist_id"
+    t.index ["user_id"], name: "index_songs_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.string "unconfirmed_email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "first_name"
+    t.string "last_name"
+    t.string "username"
+    t.text "bio"
+    t.string "location"
+    t.date "date_of_birth"
+    t.string "profile_image_url"
+    t.boolean "active", default: true, null: false
+    t.boolean "banned", default: false, null: false
+    t.datetime "banned_at"
+    t.text "ban_reason"
+    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -125,8 +163,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_20_204805) do
   add_foreign_key "albums", "genres"
   add_foreign_key "playlist_songs", "playlists"
   add_foreign_key "playlist_songs", "songs"
+  add_foreign_key "playlists", "users"
   add_foreign_key "song_genres", "genres"
   add_foreign_key "song_genres", "songs"
   add_foreign_key "songs", "albums"
   add_foreign_key "songs", "artists"
+  add_foreign_key "songs", "users"
 end

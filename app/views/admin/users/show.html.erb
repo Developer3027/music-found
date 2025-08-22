@@ -1,0 +1,195 @@
+<section class="flex flex-col w-full text-zinc-50 mt-8 px-4">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">User Details</h1>
+    <div class="flex gap-2">
+      <%= link_to "Edit User", edit_admin_user_path(@user), class: "bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-md transition-colors" %>
+      <%= link_to "Back to Users", admin_users_path, class: "bg-zinc-700 hover:bg-zinc-600 px-4 py-2 rounded-md transition-colors" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- User Profile Card -->
+    <div class="lg:col-span-1">
+      <div class="bg-zinc-800 rounded-lg p-6">
+        <div class="text-center">
+          <% if @user.profile_image.attached? %>
+            <%= image_tag @user.profile_image, class: "mx-auto h-32 w-32 rounded-full object-cover" %>
+          <% else %>
+            <div class="mx-auto h-32 w-32 rounded-full bg-zinc-600 flex items-center justify-center">
+              <span class="text-4xl font-medium text-zinc-300"><%= @user.first_name&.first %><%= @user.last_name&.first %></span>
+            </div>
+          <% end %>
+          
+          <h2 class="mt-4 text-xl font-bold text-zinc-50"><%= @user.full_name %></h2>
+          <p class="text-zinc-400">@<%= @user.username %></p>
+          
+          <!-- Status Badge -->
+          <div class="mt-3">
+            <% case @user.status %>
+            <% when 'active' %>
+              <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+            <% when 'inactive' %>
+              <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-yellow-100 text-yellow-800">Inactive</span>
+            <% when 'banned' %>
+              <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">Banned</span>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- User Actions -->
+        <div class="mt-6 space-y-3">
+          <% if @user.banned? %>
+            <%= link_to unban_admin_user_path(@user), method: :patch, 
+                       data: { confirm: "Are you sure you want to unban this user?" },
+                       class: "w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors text-center block" do %>
+              Unban User
+            <% end %>
+          <% else %>
+            <%= link_to ban_admin_user_path(@user), method: :patch, 
+                       data: { confirm: "Are you sure you want to ban this user?" },
+                       class: "w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors text-center block" do %>
+              Ban User
+            <% end %>
+          <% end %>
+          
+          <%= link_to admin_user_path(@user), method: :delete, 
+                     data: { confirm: "Are you sure? This action cannot be undone." },
+                     class: "w-full bg-red-800 hover:bg-red-900 text-white font-medium py-2 px-4 rounded-md transition-colors text-center block" do %>
+            Delete User
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Information -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Basic Information -->
+      <div class="bg-zinc-800 rounded-lg p-6">
+        <h3 class="text-lg font-semibold mb-4">Basic Information</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-zinc-400">Email</label>
+            <p class="mt-1 text-zinc-50"><%= @user.email %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-zinc-400">Username</label>
+            <p class="mt-1 text-zinc-50">@<%= @user.username %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-zinc-400">Full Name</label>
+            <p class="mt-1 text-zinc-50"><%= @user.full_name %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-zinc-400">Age</label>
+            <p class="mt-1 text-zinc-50"><%= @user.age || 'Not specified' %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-zinc-400">Location</label>
+            <p class="mt-1 text-zinc-50"><%= @user.location.presence || 'Not specified' %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-zinc-400">Registration Date</label>
+            <p class="mt-1 text-zinc-50"><%= @user.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+          </div>
+        </div>
+        
+        <% if @user.bio.present? %>
+          <div class="mt-4">
+            <label class="block text-sm font-medium text-zinc-400">Bio</label>
+            <p class="mt-1 text-zinc-50"><%= @user.bio %></p>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Account Activity -->
+      <div class="bg-zinc-800 rounded-lg p-6">
+        <h3 class="text-lg font-semibold mb-4">Account Activity</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-zinc-400">Last Sign In</label>
+            <p class="mt-1 text-zinc-50">
+              <%= @recent_activity[:last_sign_in]&.strftime("%B %d, %Y at %I:%M %p") || 'Never' %>
+            </p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-zinc-400">Sign In Count</label>
+            <p class="mt-1 text-zinc-50"><%= @recent_activity[:sign_in_count] || 0 %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-zinc-400">Songs Uploaded</label>
+            <p class="mt-1 text-zinc-50"><%= @recent_activity[:songs_count] %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-zinc-400">Playlists Created</label>
+            <p class="mt-1 text-zinc-50"><%= @recent_activity[:playlists_count] %></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ban Information (if banned) -->
+      <% if @user.banned? %>
+        <div class="bg-red-900/20 border border-red-800 rounded-lg p-6">
+          <h3 class="text-lg font-semibold mb-4 text-red-400">Ban Information</h3>
+          <div class="space-y-2">
+            <div>
+              <label class="block text-sm font-medium text-zinc-400">Banned At</label>
+              <p class="mt-1 text-zinc-50"><%= @user.banned_at&.strftime("%B %d, %Y at %I:%M %p") %></p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-zinc-400">Ban Reason</label>
+              <p class="mt-1 text-zinc-50"><%= @user.ban_reason.presence || 'No reason provided' %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Recent Songs -->
+      <% if @user_songs.any? %>
+        <div class="bg-zinc-800 rounded-lg p-6">
+          <h3 class="text-lg font-semibold mb-4">Recent Songs</h3>
+          <div class="space-y-3">
+            <% @user_songs.each do |song| %>
+              <div class="flex items-center space-x-3 p-3 bg-zinc-700 rounded-md">
+                <%= image_tag song.song_image, class: "w-12 h-12 rounded object-cover" if song.song_image.attached? %>
+                <div class="flex-1">
+                  <p class="font-medium text-zinc-50"><%= song.title %></p>
+                  <p class="text-sm text-zinc-400">Uploaded <%= time_ago_in_words(song.created_at) %> ago</p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <% if @user.songs.count > 10 %>
+            <p class="mt-3 text-sm text-zinc-400">
+              Showing 10 of <%= @user.songs.count %> songs
+            </p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- Recent Playlists -->
+      <% if @user_playlists.any? %>
+        <div class="bg-zinc-800 rounded-lg p-6">
+          <h3 class="text-lg font-semibold mb-4">Recent Playlists</h3>
+          <div class="space-y-3">
+            <% @user_playlists.each do |playlist| %>
+              <div class="flex items-center space-x-3 p-3 bg-zinc-700 rounded-md">
+                <div class="flex-1">
+                  <p class="font-medium text-zinc-50"><%= playlist.name %></p>
+                  <p class="text-sm text-zinc-400">
+                    <%= pluralize(playlist.songs.count, 'song') %> • 
+                    Created <%= time_ago_in_words(playlist.created_at) %> ago
+                  </p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <% if @user.playlists.count > 10 %>
+            <p class="mt-3 text-sm text-zinc-400">
+              Showing 10 of <%= @user.playlists.count %> playlists
+            </p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

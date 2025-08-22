@@ -1,6 +1,16 @@
 <div class="flex justify-between items-center p-4">
-  <h1 class="kanit font-bold text-4xl">
-    <%= link_to "Zuke", root_path %>
-  </h1>
+  <div class="flex items-center space-x-3">
+    <h1 class="kanit font-bold text-4xl">
+      <%= link_to "Zuke", root_path %>
+    </h1>
+    <% if user_signed_in? %>
+      <div class="hidden md:flex items-center space-x-2 text-sm text-gray-600">
+        <span>•</span>
+        <span class="truncate max-w-24">
+          Welcome, <%= user_greeting(current_user) %>
+        </span>
+      </div>
+    <% end %>
+  </div>
   <%= render 'music/components/sidebar/menu_button' %>
 </div>

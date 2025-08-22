@@ -1,5 +1,16 @@
 Rails.application.routes.draw do
+  devise_for :users, controllers: {
+    registrations: "users/registrations"
+  }
   devise_for :admins, skip: [ :registrations ]
+
+  # User profile routes
+  resource :profile, only: [ :show, :edit, :update ]
+
+  # Authenticated user root
+  authenticated :user do
+    root to: "music#index", as: :user_root
+  end
 
   # config/routes.rb
   authenticated :admin do
@@ -12,6 +23,13 @@ Rails.application.routes.draw do
         delete [ :destroy_image, :destroy_file ]
       end
     end
+
+    resources :users, only: [ :index, :show, :edit, :update, :destroy ] do
+      member do
+        patch :ban
+        patch :unban
+      end
+    end
   end
 
 scope :music do
@@ -21,11 +39,22 @@ scope :music do
   get "playlists", to: "music#playlists", as: :music_playlists
   get "playlists/:id", to: "music#playlist", as: :music_playlist
   get "about", to: "music#about", as: :music_about
+  get "my-music", to: "music#my_music", as: :my_music
 end
 
   resources :music, only: [ :index ] do
     post "audio-player", to: "music#audio_player", on: :collection
   end
+
+  # User music management routes
+  resources :songs, except: [ :index ] do
+    member do
+      delete :destroy_image
+      delete :destroy_file
+    end
+  end
+
+  resources :playlists, only: [ :new, :create, :edit, :update, :destroy ]
 
   get "home/about", to: "home#about", as: :home_about
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

@@ -9,11 +9,35 @@
 
   </ul>
   
-  <h2 class="kanit font-semibold text-lg mb-4 mt-8 hidden lg:block md:hidden block text-gray-900">Your Music</h2>
-  <ul class="kanit space-y-1">
-    <%= sidebar_link_to "Library", music_playlists_path, "library", data: { turbo_frame: "music-frame" } %>
-    
-    <%= sidebar_link_to "Artists", music_artists_path, "crown", data: { turbo_frame: "music-frame" } %>
+  <% if user_signed_in? %>
+    <h2 class="kanit font-semibold text-lg mb-4 mt-8 hidden lg:block md:hidden block text-gray-900">Your Music</h2>
+    <ul class="kanit space-y-1">
+      <%= sidebar_link_to "My Music", my_music_path, "library", data: { turbo_frame: "music-frame" } %>
+      
+      <%= sidebar_link_to "Upload Song", new_song_path, "note" %>
+      
+      <%= sidebar_link_to "Create Playlist", new_playlist_path, "record" %>
+      
+      <%= sidebar_link_to "Browse Library", music_playlists_path, "explore", data: { turbo_frame: "music-frame" } %>
+      
+      <%= sidebar_link_to "Artists", music_artists_path, "crown", data: { turbo_frame: "music-frame" } %>
 
-  </ul>
+    </ul>
+    
+    <h2 class="kanit font-semibold text-lg mb-4 mt-8 hidden lg:block md:hidden block text-gray-900">Account</h2>
+    <ul class="kanit space-y-1">
+      <%= sidebar_link_to "Profile", profile_path, "home" %>
+      
+      <%= sidebar_link_to "Settings", edit_profile_path, "tag" %>
+
+    </ul>
+  <% else %>
+    <h2 class="kanit font-semibold text-lg mb-4 mt-8 hidden lg:block md:hidden block text-gray-900">Get Started</h2>
+    <ul class="kanit space-y-1">
+      <%= sidebar_link_to "Sign Up", new_user_registration_path, "home" %>
+      
+      <%= sidebar_link_to "Login", new_user_session_path, "note" %>
+
+    </ul>
+  <% end %>
 </div>

@@ -1,21 +1,21 @@
-<div class="relative w-full h-[200px] bg-gradient-to-r from-purple-600 to-purple-400"
+<div class="relative w-full"
      data-controller="music--banner"
      data-music--banner-target="container">
     <!-- Dynamic Image -->
     <%= image_tag(
       banner_image || "/music_files/home-banner.jpg",
-      class: "w-full h-full object-cover opacity-80",
+      class: "w-full object-cover opacity-80 xl:aspect-[21/9] xl:object-center h-40",
       alt: "Banner Image",
       data: { "music--banner-target": "image" }
     ) %>
     
     <!-- Overlay (positioned absolutely over image) -->
-    <div class="absolute inset-0 bg-gradient-to-r from-purple-900/70 via-purple-800/50 to-transparent flex items-center p-6"
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.5),transparent)] flex items-center p-6"
      data-music--banner-target="overlay">
       <div>
-        <h2 class="text-white text-3xl sm:text-4xl font-bold mb-2 drop-shadow-lg"
+        <h2 class="text-white text-3xl sm:text-4xl xl:text-5xl font-bold mb-2 drop-shadow-lg"
             data-music--banner-target="title"><%= title || "Welcome to Music Found" %></h2>
-        <p class="text-purple-100 text-lg drop-shadow-md"
+        <p class="text-purple-100 text-lg xl:text-xl drop-shadow-md"
           data-music--banner-target="subtitle"><%= subtitle || "Discover your next favorite song" %></p>
       </div>
     </div>
