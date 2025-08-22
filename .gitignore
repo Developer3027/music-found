@@ -1,6 +1,9 @@
 # ignore the gems of bundle
 /vendor/bundle
 
+#ignore music files
+/public/music_files/*
+
 # Ignore bundler config.
 /.bundle
 

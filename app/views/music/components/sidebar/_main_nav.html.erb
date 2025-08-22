@@ -1,0 +1,12 @@
+<div class="flex flex-col p-4">
+  <h2 class="kanit">Menu</h2>
+  <hr class="mb-3">
+  <ul class="kanit">
+    <%= sidebar_link_to "Home", music_index_path, "home", data: { turbo_frame: "music-frame" } %>
+    
+    <%= sidebar_link_to "Artist", music_artists_path, "crown", data: { turbo_frame: "music-frame" } %>
+
+    <%= sidebar_link_to "Genres", music_genres_path, "tag", data: { turbo_frame: "music-frame" } %>
+
+  </ul>
+</div>

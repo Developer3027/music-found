@@ -1,0 +1,5 @@
+<div data-controller="music--time-display" class="flex items-center w-full">
+  <div data-music--time-display-target="current" class="mx-2 w-[4.5rem] text-right font-mono">0:00</div>
+  <%= yield %> <!-- This yields the waveform content -->
+  <div data-music--time-display-target="duration" class="mx-2 w-[4.5rem] text-right font-mono">0:00</div>
+</div>

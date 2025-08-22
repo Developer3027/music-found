@@ -14,12 +14,22 @@
     cursor: pointer;
   }
 
-  .transition-none {
-    transition: none !important;
+  .loading-progress {
+    transition: width 0.5s ease-out;
+  }
+
+  .loading-progress.transition-none {
+    transition: none;
   }
   
   [data-music--player-target="loadingProgress"] {
     transition: width 0.3s ease-out;
+  }
+
+  /* Add transition for the banner image */
+  [data-music--banner-target="image"] {
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+    will-change: opacity; /* Helps with performance */
   }
 
   /* app/assets/stylesheets/application.css */
@@ -27,6 +37,32 @@
   [data-music--player-target="duration"] {
     font-variant-numeric: tabular-nums; /* Ensures consistent width for numbers */
     min-width: 3.5rem; /* Prevents layout shift */
+  }
+
+  .playlist-item {
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid theme('colors.gray.700');
+  }
+
+  .playlist-item:last-child {
+    border-bottom: none;
+  }
+
+  .playlist-item.active {
+    background-color: theme('colors.gray.700');
+  }
+  
+  .letter-heading {
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .artist-card {
+    transition: transform 0.2s;
+  }
+  
+  .artist-card:hover {
+    transform: translateY(-2px);
   }
 
  .kodchasan-extralight {

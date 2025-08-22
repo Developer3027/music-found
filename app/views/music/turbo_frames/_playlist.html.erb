@@ -1,0 +1,26 @@
+<%= turbo_frame_tag "music_content" do %>
+  <div data-controller="music--playlist" 
+       data-music--playlist-banner-value="<%= @playlist.cover_image_url %>"
+       class="text-[#1e1e1e] py-4">
+    
+    <h2 class="text-xl font-bold mb-2"><%= @playlist.name %></h2>
+    <p class="text-gray-400 mb-4"><%= @playlist.description %></p>
+    
+    <div data-music--playlist-target="list" class="divide-y divide-gray-700">
+      <% @songs.each_with_index do |song, index| %>
+        <div class="playlist-item py-3 px-2 hover:bg-gray-800 cursor-pointer flex items-center"
+             data-action="click->music--playlist#selectSong"
+             data-music-playlist-url-value="<%= song.song_file_url %>"
+             data-music-playlist-title-value="<%= song.title %>"
+             data-music-playlist-artist-value="<%= song.artist_name %>"
+             data-music-playlist-song-id-value="<%= song.id %>">
+          <div class="w-8 text-gray-400 text-center"><%= index + 1 %></div>
+          <div class="flex-1 w-full">
+            <div class="font-medium"><%= song.title %></div>
+            <div class="text-sm text-gray-400"><%= song.artist_name %></div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

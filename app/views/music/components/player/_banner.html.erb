@@ -1,0 +1,22 @@
+<div class="relative w-full h-[200px]" 
+     data-controller="music--banner"
+     data-music--banner-target="container">
+    <!-- Dynamic Image -->
+    <%= image_tag(
+      banner_image || "/music_files/home-banner.jpg", 
+      class: "w-full h-full object-cover", 
+      alt: "Banner Image",
+      data: { "music--banner-target": "image" }
+    ) %>
+    
+    <!-- Overlay (positioned absolutely over image) -->
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.5),transparent)] flex items-start p-6" 
+     data-music--banner-target="overlay">
+      <div>
+        <h2 class="text-[#FFC9A4] text-4xl font-bold" 
+            data-music--banner-target="title"><%= title || "Welcome back Dev3027" %></h2>
+        <p class="text-[#FFC9A4]" 
+          data-music--banner-target="subtitle"><%= subtitle || "Please consider making me available to everyone." %></p>
+      </div>
+    </div>
+  </div>
