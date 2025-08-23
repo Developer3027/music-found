@@ -1,10 +1,16 @@
 class SongsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_song, only: [ :show, :edit, :update, :destroy, :destroy_image, :destroy_file ]
+  before_action :set_song, only: [ :edit, :update, :destroy, :destroy_image, :destroy_file ]
+  before_action :set_turbo_frame_headers, if: :turbo_frame_request?
+  protect_from_forgery with: :exception, unless: -> { turbo_frame_request? && request.get? }
   load_and_authorize_resource
 
   def new
     @song = current_user.songs.build
+
+    if turbo_frame_request?
+      render partial: "songs/form", locals: { song: @song }
+    end
   end
 
   def create
@@ -14,10 +20,23 @@ class SongsController < ApplicationController
       if @song.save
         set_image_url(@song)
         set_file_url(@song)
-        format.html { redirect_to my_music_path, notice: "Song was successfully uploaded." }
+        format.html do
+          if turbo_frame_request?
+            flash.now[:notice] = "Song was successfully uploaded."
+            render partial: "music/turbo_frames/my_music"
+          else
+            redirect_to my_music_path, notice: "Song was successfully uploaded."
+          end
+        end
         format.json { render json: @song }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html do
+          if turbo_frame_request?
+            render partial: "songs/form", locals: { song: @song }, status: :unprocessable_entity
+          else
+            render :new, status: :unprocessable_entity
+          end
+        end
         format.json { render json: @song.errors, status: :unprocessable_entity }
       end
     end
@@ -85,6 +104,23 @@ class SongsController < ApplicationController
 
   def set_song
     @song = current_user.songs.find(params[:id])
+  end
+
+  def set_turbo_frame_headers
+    response.headers["Content-Type"] = "text/html; turbo-stream; charset=utf-8"
+    response.headers["Vary"] = "Accept"
+  end
+
+  # Override authenticate_user! for turbo frame requests to handle authentication failures gracefully
+  def authenticate_user!
+    if turbo_frame_request?
+      unless user_signed_in?
+        render partial: "music/turbo_frames/my_music_unauthenticated", status: :unauthorized
+        false
+      end
+    else
+      super
+    end
   end
 
   def song_params

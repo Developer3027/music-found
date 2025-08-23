@@ -31,6 +31,11 @@ class ApplicationController < ActionController::Base
     Rails.application.routes.default_url_options[:host] = request.host_with_port
   end
 
+  # Helper method to detect turbo frame requests
+  def turbo_frame_request?
+    request.headers["Turbo-Frame"].present?
+  end
+
   # Devise redirect paths
   def after_sign_in_path_for(resource)
     case resource

@@ -32,6 +32,39 @@
     will-change: opacity; /* Helps with performance */
   }
 
+  /* Add smooth height transition for the banner container */
+  [data-music--banner-target="container"] {
+    transition: height 0.5s ease-out;
+    will-change: height; /* Helps with performance during height changes */
+    min-height: 160px; /* Minimum height constraint */
+  }
+
+  /* Banner height toggle button styling */
+  #banner-height-toggle {
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  #banner-height-toggle:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Ensure toggle button is properly positioned on all screen sizes */
+  @media (max-width: 640px) {
+    #banner-height-toggle {
+      top: 8px;
+      right: 8px;
+      padding: 6px;
+    }
+    
+    #banner-height-toggle svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
   /* app/assets/stylesheets/application.css */
   [data-music--player-target="currentTime"],
   [data-music--player-target="duration"] {

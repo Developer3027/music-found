@@ -1,13 +1,16 @@
-<div class="relative w-full"
-     data-controller="music--banner"
-     data-music--banner-target="container">
-    <!-- Dynamic Image -->
-    <%= image_tag(
-      banner_image || "/music_files/home-banner.jpg",
-      class: "w-full object-cover opacity-80 xl:aspect-[21/9] xl:object-center h-80",
-      alt: "Banner Image",
-      data: { "music--banner-target": "image" }
-    ) %>
+<div class="relative w-full overflow-hidden"
+    data-controller="music--banner"
+    data-music--banner-target="container">
+  <!-- Dynamic Image -->
+  <%= image_tag(
+    banner_image || "/music_files/home-banner.jpg",
+    class: "w-full object-cover opacity-80",
+    alt: "Banner Image",
+    data: { "music--banner-target": "image" }
+  ) %>
+    
+    <!-- Banner Height Toggle -->
+    <%= render 'music/components/player/banner_height_toggle' %>
     
     <!-- Overlay (positioned absolutely over image) -->
     <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.5),transparent)] flex items-center p-6"

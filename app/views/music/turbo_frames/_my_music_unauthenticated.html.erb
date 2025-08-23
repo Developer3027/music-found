@@ -1,0 +1,68 @@
+<div class="p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">My Music</h1>
+  </div>
+
+  <!-- Authentication Required Message -->
+  <div class="bg-white rounded-lg shadow p-8 text-center">
+    <div class="mx-auto h-16 w-16 text-gray-400 mb-4">
+      <%= render "icons/library" %>
+    </div>
+    <h3 class="text-xl font-medium text-gray-900 mb-2">Sign in to access your music</h3>
+    <p class="text-gray-500 mb-6">You need to be logged in to view and manage your personal music library.</p>
+    
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <%= link_to "Sign In", new_user_session_path, 
+          class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+      <%= link_to "Create Account", new_user_registration_path, 
+          class: "bg-gray-100 hover:bg-gray-200 text-gray-900 px-6 py-3 rounded-lg font-medium transition-colors" %>
+    </div>
+  </div>
+
+  <!-- Features Preview -->
+  <div class="mt-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">What you can do with an account:</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center mb-3">
+          <div class="p-2 bg-blue-100 rounded-lg mr-3">
+            <%= render "icons/note" %>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900">Upload Your Music</h3>
+        </div>
+        <p class="text-gray-600">Upload and organize your personal music collection in the cloud.</p>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center mb-3">
+          <div class="p-2 bg-green-100 rounded-lg mr-3">
+            <%= render "icons/library" %>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900">Create Playlists</h3>
+        </div>
+        <p class="text-gray-600">Build custom playlists and share them with other users.</p>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center mb-3">
+          <div class="p-2 bg-purple-100 rounded-lg mr-3">
+            <%= render "icons/crown" %>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900">Discover Artists</h3>
+        </div>
+        <p class="text-gray-600">Explore music by your favorite artists and discover new ones.</p>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center mb-3">
+          <div class="p-2 bg-red-100 rounded-lg mr-3">
+            <%= render "icons/heart" %>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900">Personal Library</h3>
+        </div>
+        <p class="text-gray-600">Access your music from anywhere and keep track of your favorites.</p>
+      </div>
+    </div>
+  </div>
+</div>

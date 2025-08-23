@@ -1,4 +1,8 @@
 class MusicController < ApplicationController
+  before_action :authenticate_user!, only: [ :my_music ]
+  before_action :set_turbo_frame_headers, if: :turbo_frame_request?
+  protect_from_forgery with: :exception, unless: -> { turbo_frame_request? && request.get? }
+
   def index
     @songs = Song.all
     @songs_data = @songs.map do |song|
@@ -13,10 +17,41 @@ class MusicController < ApplicationController
   end
 
   def my_music
-    authenticate_user!
+    # Both turbo frame and direct requests now require authentication
     @my_songs = current_user.songs.includes(:artist, :album, :genres)
     @my_playlists = current_user.playlists.includes(:songs)
-    render partial: "music/turbo_frames/my_music"
+
+    if turbo_frame_request?
+      render partial: "music/turbo_frames/my_music"
+    else
+      render partial: "music/turbo_frames/my_music"
+    end
+  rescue StandardError => e
+    # Handle any errors gracefully for turbo frames
+    if turbo_frame_request?
+      render partial: "music/turbo_frames/my_music_error", locals: { error_message: "Unable to load your music at this time." }
+    else
+      raise e
+    end
+  end
+
+  private
+
+  def set_turbo_frame_headers
+    response.headers["Content-Type"] = "text/html; turbo-stream; charset=utf-8"
+    response.headers["Vary"] = "Accept"
+  end
+
+  # Override authenticate_user! for turbo frame requests to handle authentication failures gracefully
+  def authenticate_user!
+    if turbo_frame_request?
+      unless user_signed_in?
+        render partial: "music/turbo_frames/my_music_unauthenticated", status: :unauthorized
+        false
+      end
+    else
+      super
+    end
   end
 
   def artists

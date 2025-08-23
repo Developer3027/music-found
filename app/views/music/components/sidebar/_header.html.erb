@@ -6,9 +6,6 @@
     <% if user_signed_in? %>
       <div class="hidden md:flex items-center space-x-2 text-sm text-gray-600">
         <span>•</span>
-        <span class="truncate max-w-24">
-          Welcome, <%= user_greeting(current_user) %>
-        </span>
       </div>
     <% end %>
   </div>
