@@ -26,12 +26,12 @@ export default class extends Controller {
     
     // Remove active class from all links
     this.linkTargets.forEach(link => {
-      link.classList.remove("bg-purple-500", "text-white")
+      link.classList.remove("bg-[#00B1D1]", "text-white")
       link.classList.add("text-gray-600")
     })
     
     // Add active class to clicked link
-    element.classList.add("bg-purple-500", "text-white")
+    element.classList.add("bg-[#00B1D1]", "text-white")
     element.classList.remove("text-gray-600")
     
     // Close mobile menu after navigation on mobile

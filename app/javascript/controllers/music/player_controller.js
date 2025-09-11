@@ -58,12 +58,17 @@ export default class extends Controller {
     const playOnLoad = localStorage.getItem('audioPlayOnLoad') === 'true';
     this.playOnLoadValue = playOnLoad;
     
-    // 2. Initialize queue state
+    // 2. Initialize banner state - ensure default banner is set if none exists
+    if (!localStorage.getItem('currentBanner')) {
+      localStorage.setItem('currentBanner', 'music_files/home-banner.jpg');
+    }
+    
+    // 3. Initialize queue state
     this.currentQueue = [];
     this.currentIndex = -1;
     this.currentUrl = null;
   
-    // 3. Sync initial states
+    // 4. Sync initial states
     document.dispatchEvent(new CustomEvent("player:auto-advance:changed", {
       detail: { enabled: this.autoAdvanceValue }
     }));
@@ -72,7 +77,7 @@ export default class extends Controller {
       detail: { enabled: this.playOnLoadValue }
     }));
   
-    // 4. Queue listener remains important!
+    // 5. Queue listener remains important!
     document.addEventListener("player:queue:updated", (event) => {
       
       // Improved queue update with validation
@@ -105,8 +110,8 @@ export default class extends Controller {
     try {
       this.wavesurfer = WaveSurfer.create({
         container: this.waveformTarget,
-        waveColor: "#e5e7eb",
-        progressColor: "#c74bd3",
+        waveColor: "#00B1D1",
+        progressColor: "#01DFB6",
         height: 50,
         minPxPerSec: 50,
         hideScrollbar: true,
@@ -252,12 +257,31 @@ export default class extends Controller {
    */
   handlePlayRequest(e) {
     try {
-      const { id, url, title, artist, banner, playOnLoad = false, updateBanner } = e.detail
+      const { id, url, title, artist, banner, bannerVideo, animatedBannersEnabled, playOnLoad = false, updateBanner } = e.detail
+
+      // DEBUG: Log received event data
+      console.log("🎵 PLAYER: Received player:play-requested event")
+      console.log("🎵 PLAYER: Event detail received:", e.detail)
+      console.log("🎵 PLAYER: Destructured values:", {
+        id, url, title, artist, banner, playOnLoad, updateBanner
+      })
+      console.log("🎵 PLAYER: Banner value analysis:", {
+        bannerRaw: banner,
+        bannerType: typeof banner,
+        bannerEmpty: banner === "",
+        bannerUndefined: banner === undefined,
+        bannerNull: banner === null
+      })
 
       this.setCurrentIndex(id)
 
       if (updateBanner !== false) {
-        this.updateBanner({ banner, title, artist })
+        console.log("🎵 PLAYER: About to call updateBanner with:", { banner, bannerVideo, title, artist })
+        console.log("🎵 PLAYER: Banner being passed to updateBanner:", banner)
+        console.log("🎵 PLAYER: Banner video being passed to updateBanner:", bannerVideo)
+        this.updateBanner({ banner, bannerVideo, title, artist, animatedBannersEnabled })
+      } else {
+        console.log("🎵 PLAYER: Skipping banner update (updateBanner === false)")
       }
       
       if (!this.wavesurfer || this.currentUrl !== url) {
@@ -282,6 +306,7 @@ export default class extends Controller {
         title: song.title,
         artist: song.artist,
         banner: song.banner,
+        bannerVideo: song.bannerVideo,
         autoplay: true,
         updateBanner: true
       }
@@ -309,8 +334,10 @@ export default class extends Controller {
 
   playSongFromQueue(song) {
     try {
+      // Update banner and global state for auto-advance
       this.updateBanner({
         banner: song.banner,
+        bannerVideo: song.bannerVideo,
         title: song.title,
         artist: song.artist
       })
@@ -438,13 +465,38 @@ export default class extends Controller {
    * Update banner display
    * @param {Object} details - Banner details
    */
-  updateBanner({ banner, title, artist }) {
+  updateBanner({ banner, bannerVideo, title, artist, animatedBannersEnabled }) {
+    // DEBUG: Log input parameters
+    console.log("🎵 PLAYER: updateBanner called with:", { banner, bannerVideo, title, artist })
+    console.log("🎵 PLAYER: Banner parameter analysis:", {
+      bannerRaw: banner,
+      bannerVideoRaw: bannerVideo,
+      bannerType: typeof banner,
+      bannerVideoType: typeof bannerVideo,
+      bannerTruthy: !!banner,
+      bannerVideoTruthy: !!bannerVideo,
+      bannerFallbackTriggered: !banner
+    })
+    
+    // Update global banner state for future comparisons
+    const newBanner = banner || "music_files/home-banner.jpg"
+    console.log("🎵 PLAYER: newBanner resolved to:", newBanner)
+    localStorage.setItem("currentBanner", newBanner)
+    
+    const bannerEventDetail = {
+      image: banner, // Pass the actual banner (could be null for fallback)
+      video: bannerVideo, // Pass the banner video URL
+      title: title || "Unknown Track",
+      subtitle: artist || "Unknown Artist",
+      animatedBannersEnabled: animatedBannersEnabled
+    }
+    
+    console.log("🎵 PLAYER: bannerEventDetail.image being sent:", bannerEventDetail.image)
+    console.log("🎵 PLAYER: bannerEventDetail.video being sent:", bannerEventDetail.video)
+    console.log("🎵 PLAYER: Dispatching music:banner:update with detail:", bannerEventDetail)
+    
     document.dispatchEvent(new CustomEvent("music:banner:update", {
-      detail: {
-        image: banner,
-        title: title || "Unknown Track",
-        subtitle: artist || "Unknown Artist"
-      }
+      detail: bannerEventDetail
     }))
   }
 

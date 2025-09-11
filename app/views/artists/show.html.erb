@@ -1,0 +1,157 @@
+<section class="flex justify-center items-center w-full text-zinc-50 mt-14">
+  <div class="w-full max-w-6xl">
+    <div class="p-6">
+      <!-- Artist Header -->
+      <div class="bg-white rounded-lg shadow overflow-hidden mb-8">
+        <div class="flex flex-col md:flex-row">
+          <div class="md:w-1/3">
+            <% if @artist.image_url %>
+              <%= image_tag @artist.image_url, class: "w-full h-64 md:h-80 object-cover" %>
+            <% else %>
+              <div class="w-full h-64 md:h-80 bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center">
+                <div class="text-white text-6xl">
+                  <%= render "icons/crown" %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <div class="md:w-2/3 p-6">
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @artist.name %></h1>
+                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                  <span><%= @artist.albums.count %> albums</span>
+                  <span>•</span>
+                  <span><%= @artist.songs.count %> songs</span>
+                </div>
+              </div>
+              <div class="flex space-x-2">
+                <%= link_to "Edit", edit_artist_path(@artist), class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+                <%= link_to "Delete", artist_path(@artist), method: :delete,
+                    class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors",
+                    data: { confirm: "Are you sure you want to delete this artist? This will also delete all their albums and songs." } %>
+              </div>
+            </div>
+            <% if @artist.bio.present? %>
+              <div class="text-gray-700">
+                <h3 class="text-lg font-medium mb-2">Biography</h3>
+                <p class="text-gray-600 leading-relaxed"><%= simple_format(@artist.bio) %></p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Albums Section -->
+      <div class="mb-8">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Albums</h2>
+          <%= link_to "Add Album", new_album_path(artist_id: @artist.id), class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+        </div>
+        
+        <% if @artist.albums.any? %>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <% @artist.albums.each do |album| %>
+              <div class="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow">
+                <div class="aspect-w-1 aspect-h-1">
+                  <% if album.cover_url %>
+                    <%= image_tag album.cover_url, class: "w-full h-48 object-cover" %>
+                  <% else %>
+                    <div class="w-full h-48 bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+                      <div class="text-white text-4xl">
+                        <%= render "icons/record" %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+                <div class="p-4">
+                  <h3 class="text-lg font-medium text-gray-900 truncate"><%= album.title %></h3>
+                  <p class="text-sm text-gray-500 mt-1"><%= album.songs.count %> songs</p>
+                  <div class="flex items-center justify-between mt-4">
+                    <%= link_to "View", album_path(album), class: "text-blue-600 hover:text-blue-800 text-sm font-medium" %>
+                    <div class="flex space-x-2">
+                      <%= link_to "Edit", edit_album_path(album), class: "text-blue-600 hover:text-blue-800 text-sm font-medium" %>
+                      <%= link_to "Delete", album_path(album), method: :delete,
+                          class: "text-red-600 hover:text-red-800 text-sm font-medium",
+                          data: { confirm: "Are you sure you want to delete this album?" } %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="bg-white rounded-lg shadow p-8 text-center">
+            <div class="mx-auto h-12 w-12 text-gray-400">
+              <%= render "icons/record" %>
+            </div>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No albums yet</h3>
+            <p class="mt-1 text-sm text-gray-500">Create the first album for this artist.</p>
+            <div class="mt-6">
+              <%= link_to "Add Album", new_album_path(artist_id: @artist.id), class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Songs Section -->
+      <div>
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Songs</h2>
+          <%= link_to "Add Song", new_song_path(artist: @artist.name), class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+        </div>
+        
+        <% if @artist.songs.any? %>
+          <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="divide-y divide-gray-200">
+              <% @artist.songs.each_with_index do |song, index| %>
+                <div class="p-4 hover:bg-gray-50 flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                      <% if song.image_url %>
+                        <%= image_tag song.image_url, class: "h-12 w-12 rounded-lg object-cover" %>
+                      <% else %>
+                        <div class="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <%= render "icons/note" %>
+                        </div>
+                      <% end %>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900 truncate"><%= song.title %></p>
+                      <p class="text-sm text-gray-500 truncate"><%= song.artist %></p>
+                      <% if song.album.present? %>
+                        <p class="text-xs text-gray-400 truncate"><%= song.album %></p>
+                      <% end %>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <%= link_to "Edit", edit_song_path(song), class: "text-blue-600 hover:text-blue-800 text-sm font-medium" %>
+                      <%= link_to "Delete", song_path(song), method: :delete,
+                          class: "text-red-600 hover:text-red-800 text-sm font-medium",
+                          data: { confirm: "Are you sure you want to delete this song?" } %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% else %>
+          <div class="bg-white rounded-lg shadow p-8 text-center">
+            <div class="mx-auto h-12 w-12 text-gray-400">
+              <%= render "icons/note" %>
+            </div>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No songs yet</h3>
+            <p class="mt-1 text-sm text-gray-500">Add the first song for this artist.</p>
+            <div class="mt-6">
+              <%= link_to "Add Song", new_song_path(artist: @artist.name), class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Back to Artists Link -->
+      <div class="mt-8 text-center">
+        <%= link_to "← Back to Artists", artists_path, class: "text-blue-600 hover:text-blue-800 font-medium" %>
+      </div>
+    </div>
+  </div>
+</section>

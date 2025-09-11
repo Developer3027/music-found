@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_22_183803) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_02_214855) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,12 +58,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_22_183803) do
     t.string "title"
     t.integer "release_year"
     t.string "cover_art_url"
-    t.bigint "genre_id", null: false
+    t.bigint "genre_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "artist_id", null: false
+    t.bigint "user_id"
     t.index ["artist_id"], name: "index_albums_on_artist_id"
     t.index ["genre_id"], name: "index_albums_on_genre_id"
+    t.index ["user_id"], name: "index_albums_on_user_id"
   end
 
   create_table "artists", force: :cascade do |t|
@@ -71,6 +73,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_22_183803) do
     t.string "image_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.text "bio"
+    t.string "banner_video_url"
+    t.index ["user_id"], name: "index_artists_on_user_id"
   end
 
   create_table "genres", force: :cascade do |t|
@@ -118,6 +124,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_22_183803) do
     t.bigint "album_id", null: false
     t.bigint "artist_id", null: false
     t.bigint "user_id"
+    t.boolean "public", default: false, null: false
     t.index ["album_id"], name: "index_songs_on_album_id"
     t.index ["artist_id"], name: "index_songs_on_artist_id"
     t.index ["user_id"], name: "index_songs_on_user_id"
@@ -151,6 +158,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_22_183803) do
     t.boolean "banned", default: false, null: false
     t.datetime "banned_at"
     t.text "ban_reason"
+    t.boolean "enable_animated_banners", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -161,6 +169,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_22_183803) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "albums", "artists"
   add_foreign_key "albums", "genres"
+  add_foreign_key "albums", "users"
+  add_foreign_key "artists", "users"
   add_foreign_key "playlist_songs", "playlists"
   add_foreign_key "playlist_songs", "songs"
   add_foreign_key "playlists", "users"

@@ -1,0 +1,87 @@
+<section class="flex justify-center items-center w-full text-zinc-50 mt-14">
+  <div class="w-full max-w-6xl">
+    <div class="p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">My Artists</h1>
+        <div class="flex gap-3">
+          <%= link_to "Create Artist", new_artist_path, class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+        </div>
+      </div>
+
+      <!-- Artists Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="flex items-center">
+            <div class="p-2 bg-purple-100 rounded-lg">
+              <%= render "icons/crown" %>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">My Artists</p>
+              <p class="text-2xl font-bold text-gray-900"><%= @artists.count %></p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="flex items-center">
+            <div class="p-2 bg-green-100 rounded-lg">
+              <%= render "icons/record" %>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Total Albums</p>
+              <p class="text-2xl font-bold text-gray-900"><%= @artists.joins(:albums).count %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Artists Grid -->
+      <% if @artists.any? %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <% @artists.each do |artist| %>
+            <div class="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow">
+              <div class="aspect-w-1 aspect-h-1">
+                <% if artist.image_url %>
+                  <%= image_tag artist.image_url, class: "w-full h-48 object-cover" %>
+                <% else %>
+                  <div class="w-full h-48 bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center">
+                    <div class="text-white text-4xl">
+                      <%= render "icons/crown" %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+              <div class="p-4">
+                <h3 class="text-lg font-medium text-gray-900 truncate"><%= artist.name %></h3>
+                <p class="text-sm text-gray-500 mt-1"><%= artist.albums.count %> albums • <%= artist.songs.count %> songs</p>
+                <% if artist.bio.present? %>
+                  <p class="text-sm text-gray-600 mt-2 line-clamp-2"><%= truncate(artist.bio, length: 100) %></p>
+                <% end %>
+                <div class="flex items-center justify-between mt-4">
+                  <%= link_to "View", artist_path(artist), class: "text-blue-600 hover:text-blue-800 text-sm font-medium" %>
+                  <div class="flex space-x-2">
+                    <%= link_to "Edit", edit_artist_path(artist), class: "text-blue-600 hover:text-blue-800 text-sm font-medium" %>
+                    <%= link_to "Delete", artist_path(artist), method: :delete,
+                        class: "text-red-600 hover:text-red-800 text-sm font-medium",
+                        data: { confirm: "Are you sure you want to delete this artist? This will also delete all their albums and songs." } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="bg-white rounded-lg shadow p-8 text-center">
+          <div class="mx-auto h-12 w-12 text-gray-400">
+            <%= render "icons/crown" %>
+          </div>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No artists yet</h3>
+          <p class="mt-1 text-sm text-gray-500">Get started by creating your first artist.</p>
+          <div class="mt-6">
+            <%= link_to "Create Artist", new_artist_path, class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

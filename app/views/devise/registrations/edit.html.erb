@@ -31,6 +31,12 @@
     <%= f.password_field :current_password, autocomplete: "current-password" %>
   </div>
 
+  <div class="field">
+    <%= f.label :enable_animated_banners, "Enable Animated Banners" %><br />
+    <%= f.check_box :enable_animated_banners %>
+    <small>Allow animated video banners to play when listening to music (requires artists to upload banner videos)</small>
+  </div>
+
   <div class="actions">
     <%= f.submit "Update" %>
   </div>

@@ -1,13 +1,33 @@
 <div class="relative w-full overflow-hidden"
     data-controller="music--banner"
     data-music--banner-target="container">
-  <!-- Dynamic Image -->
-  <%= image_tag(
-    banner_image || "/music_files/home-banner.jpg",
-    class: "w-full object-cover opacity-80",
-    alt: "Banner Image",
-    data: { "music--banner-target": "image" }
-  ) %>
+  <!-- DEBUG: Animation Settings Check -->
+  <% Rails.logger.debug "🎥 BANNER DEBUG: User animated banners enabled: #{current_user&.animated_banners_enabled?}" %>
+  <% Rails.logger.debug "🎥 BANNER DEBUG: Banner video present: #{local_assigns[:banner_video].present?}" %>
+  <% Rails.logger.debug "🎥 BANNER DEBUG: Banner video value: #{local_assigns[:banner_video]}" %>
+  <% Rails.logger.debug "🎥 BANNER DEBUG: Should show video: #{current_user&.animated_banners_enabled? && local_assigns[:banner_video].present?}" %>
+
+    <!-- Animated Banner Video -->
+    <% Rails.logger.info "🎥 BANNER: Rendering animated video banner for user #{current_user&.id}" %>
+    <video class="object-cover opacity-80"
+           autoplay
+           muted
+           loop
+           playsinline
+           data-music--banner-target="video">
+      <source src="<%= banner_video %>" type="video/mp4">
+
+    </video>
+
+    <!-- Static Banner Image -->
+    <% Rails.logger.info "🎥 BANNER: Rendering static image banner (user: #{current_user&.id}, enabled: #{current_user&.animated_banners_enabled?}, video: #{local_assigns[:banner_video].present?})" %>
+    <%= image_tag(
+      banner_image || "/music_files/home-banner.jpg",
+      class: "object-cover opacity-80",
+      alt: "Banner Image",
+      data: { "music--banner-target": "image" }
+    ) %>
+
     
     <!-- Banner Height Toggle -->
     <%= render 'music/components/player/banner_height_toggle' %>

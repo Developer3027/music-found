@@ -4,6 +4,9 @@ Rails.application.routes.draw do
   }
   devise_for :admins, skip: [ :registrations ]
 
+  # Upload interface routes
+  resources :presigns, only: [ :create ]
+
   # User profile routes
   resource :profile, only: [ :show, :edit, :update ]
 
@@ -20,7 +23,11 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :songs, only: [ :index, :new, :create, :edit, :update, :destroy ] do
       member do
-        delete [ :destroy_image, :destroy_file ]
+        delete :destroy_image
+        delete :destroy_file
+        delete :destroy_artist_image
+        delete :destroy_album_cover
+        delete :destroy_artist_banner_video
       end
     end
 
@@ -54,7 +61,28 @@ end
     end
   end
 
+  # Artist management routes
+  resources :artists do
+    member do
+      delete :destroy_image
+      delete :destroy_banner_video
+    end
+  end
+
+  # Album management routes
+  resources :albums do
+    member do
+      delete :destroy_cover
+    end
+  end
+
   resources :playlists, only: [ :new, :create, :edit, :update, :destroy ]
+
+  # Upload interface routes
+  get "upload", to: "upload#index", as: :upload
+  post "upload/song", to: "upload#create_song", as: :upload_song
+  post "upload/artist", to: "upload#create_artist", as: :upload_artist
+  post "upload/album", to: "upload#create_album", as: :upload_album
 
   get "home/about", to: "home#about", as: :home_about
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

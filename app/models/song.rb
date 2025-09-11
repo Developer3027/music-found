@@ -8,20 +8,30 @@ class Song < ApplicationRecord
   has_many :song_genres, dependent: :destroy
   has_many :genres, through: :song_genres
 
-  has_one_attached :song_image
-  has_one_attached :song_file
 
   validates :title, presence: true
   validates :artist, presence: true
-  validates :song_file, presence: true, on: :create
-  validate :acceptable_song_file
-  validate :acceptable_image
+  validates :song_file_url, presence: true
+  validates :song_image_url, presence: true
 
-  delegate :name, to: :artist, prefix: true
-  delegate :title, to: :album, prefix: true
+  # Virtual attributes for form handling
+  attr_accessor :artist_name, :album_title
+
+  # Make delegations safe by allowing nil
+  delegate :name, to: :artist, prefix: true, allow_nil: true
+  delegate :title, to: :album, prefix: true, allow_nil: true
 
   scope :by_user, ->(user) { where(user: user) }
-  scope :public_songs, -> { where(user: nil) }
+  scope :public_songs, -> { where(public: true) }
+  scope :accessible_to_user, ->(user) {
+    if user.present?
+      # Authenticated users: public songs + their own private songs
+      where("public = ? OR user_id = ?", true, user.id)
+    else
+      # Non-authenticated users: only public songs
+      where(public: true)
+    end
+  }
 
   def owned_by?(user)
     self.user == user
@@ -29,31 +39,5 @@ class Song < ApplicationRecord
 
   def image_url
     song_image_url || artist&.image_url
-  end
-
-  private
-
-  def acceptable_song_file
-    return unless song_file.attached?
-
-    unless song_file.blob.content_type.in?(%w[audio/mpeg audio/mp3 audio/wav audio/ogg audio/m4a])
-      errors.add(:song_file, "must be an audio file (MP3, WAV, OGG, M4A)")
-    end
-
-    if song_file.blob.byte_size > 50.megabytes
-      errors.add(:song_file, "must be less than 50MB")
-    end
-  end
-
-  def acceptable_image
-    return unless song_image.attached?
-
-    unless song_image.blob.content_type.in?(%w[image/jpeg image/png image/webp])
-      errors.add(:song_image, "must be a JPEG, PNG, or WebP image")
-    end
-
-    if song_image.blob.byte_size > 5.megabytes
-      errors.add(:song_image, "must be less than 5MB")
-    end
   end
 end

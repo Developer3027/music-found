@@ -14,19 +14,21 @@
     <ul class="kanit space-y-1">
       <%= sidebar_link_to "My Music", my_music_path, "library", data: { turbo_frame: "music-frame" } %>
       
-      <%= sidebar_link_to "Upload Song", new_song_path, "note" %>
+      <%= sidebar_link_to "Upload", upload_path, "note" %>
       
-      <%= sidebar_link_to "Create Playlist", new_playlist_path, "record" %>
+      <%= sidebar_link_to "My Artists", artists_path, "crown" %>
+      
+      <%= sidebar_link_to "My Albums", albums_path, "record" %>
+      
+      <%= sidebar_link_to "Create Playlist", new_playlist_path, "library" %>
       
       <%= sidebar_link_to "Browse Library", music_playlists_path, "explore", data: { turbo_frame: "music-frame" } %>
-      
-      <%= sidebar_link_to "Artists", music_artists_path, "crown", data: { turbo_frame: "music-frame" } %>
 
     </ul>
     
     <h2 class="kanit font-semibold text-lg mb-4 mt-8 hidden lg:block md:hidden block text-gray-900">Account</h2>
     <ul class="kanit space-y-1">
-      <%= sidebar_link_to "Profile", profile_path, "home" %>
+      <%= sidebar_link_to "Profile", profile_path, "home", data: { turbo_frame: "music-frame" } %>
       
       <%= sidebar_link_to "Settings", edit_profile_path, "tag" %>
 

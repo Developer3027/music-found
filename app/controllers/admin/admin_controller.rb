@@ -2,7 +2,7 @@ class Admin::AdminController < ApplicationController
   before_action :authenticate_admin!
 
   def index
-    @songs = Song.all
+    @songs = Song.all.includes([ :artist, :genres ])
     @song_count = Song.count
 
     # User statistics

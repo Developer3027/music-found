@@ -1,0 +1,56 @@
+{
+  "CORSRules": [
+    {
+      "ID": "AllowDirectUploadFromLocalDev",
+      "AllowedHeaders": [
+        "Content-Type",
+        "Content-MD5",
+        "Content-Disposition",
+        "x-amz-server-side-encryption",
+        "x-amz-storage-class",
+        "x-amz-meta-*"
+      ],
+      "AllowedMethods": [
+        "PUT",
+        "POST",
+        "GET",
+        "HEAD"
+      ],
+      "AllowedOrigins": [
+        "http://127.0.0.1:3000",
+        "http://localhost:3000"
+      ],
+      "ExposeHeaders": [
+        "ETag",
+        "x-amz-version-id"
+      ],
+      "MaxAgeSeconds": 3000
+    },
+    {
+      "ID": "AllowDirectUploadFromProduction",
+      "AllowedHeaders": [
+        "Content-Type",
+        "Content-MD5",
+        "Content-Disposition",
+        "x-amz-server-side-encryption",
+        "x-amz-storage-class",
+        "x-amz-meta-*"
+      ],
+      "AllowedMethods": [
+        "PUT",
+        "POST",
+        "GET",
+        "HEAD"
+      ],
+      "AllowedOrigins": [
+        "https://yourdomain.com",
+        "https://www.yourdomain.com"
+      ],
+      "ExposeHeaders": [
+        "ETag",
+        "x-amz-version-id"
+      ],
+      "MaxAgeSeconds": 3000
+    }
+  ]
+}

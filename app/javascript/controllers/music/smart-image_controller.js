@@ -8,7 +8,9 @@ export default class extends Controller {
     url: String,
     title: String,
     artist: String,
-    banner: String
+    banner: String,
+    bannerVideo: String,
+    animatedBannersEnabled: Boolean
   }
 
   connect() {
@@ -24,20 +26,51 @@ export default class extends Controller {
     e.preventDefault()
     const playOnLoad = localStorage.getItem("audioPlayOnLoad") === "true"
 
-    const currentBanner = this.bannerValue || "music_files/home-banner.jpg"
-    const newBanner = e.target.dataset.banner || "music_files/home-banner.jpg"
-    const updateBanner = currentBanner !== newBanner
+    // DEBUG: Log raw banner value from stimulus before any processing
+    // console.log("🎵 SMART-IMAGE: Raw this.bannerValue:", this.bannerValue)
+    // console.log("🎵 SMART-IMAGE: Banner value type:", typeof this.bannerValue)
+    // console.log("🎵 SMART-IMAGE: Banner value empty check:", this.bannerValue === "")
+
+    // Get current global banner state from localStorage or default
+    const currentBanner = localStorage.getItem("currentBanner") || "music_files/home-banner.jpg"
+    const newBanner = this.bannerValue || "music_files/home-banner.jpg"
+    // console.log("🎵 SMART-IMAGE: currentBanner:", currentBanner, "newBanner:", newBanner)
+    // console.log("🎵 SMART-IMAGE: Banner fallback triggered:", !this.bannerValue)
+    
+    // FIXED: Always update banner to ensure song metadata (title, artist) is updated
+    // even if background image doesn't change
+    // const updateBanner = true // Always update banner with current song info
+    
+    // Store the new banner as current for future comparisons
+    localStorage.setItem("currentBanner", newBanner)
+
+    // DEBUG: Log all values before dispatching event
+    // console.log("🎵 SMART-IMAGE: Preparing to dispatch player:play-requested")
+    // console.log("🎵 SMART-IMAGE: Controller Values:", {
+    //  id: this.idValue,
+    //  url: this.urlValue,
+    //  title: this.titleValue,
+    //  artist: this.artistValue,
+    //  banner: this.bannerValue,
+    //  bannerResolved: newBanner
+    // })
+    
+    const eventDetail = {
+      id: this.idValue,
+      url: this.urlValue,
+      title: this.titleValue,
+      artist: this.artistValue,
+      banner: this.bannerValue,
+      bannerVideo: this.bannerVideoValue,
+      playOnLoad: playOnLoad,
+      animatedBannersEnabled: this.animatedBannersEnabledValue
+    }
+    
+    // console.log("🎵 SMART-IMAGE: Event detail being dispatched:", eventDetail)
+    // console.log("🎵 SMART-IMAGE: updateBanner set to:", updateBanner)
 
     window.dispatchEvent(new CustomEvent("player:play-requested", {
-      detail: {
-        id: this.idValue,
-        url: this.urlValue,
-        title: this.titleValue,
-        artist: this.artistValue,
-        banner: this.bannerValue,
-        playOnLoad: playOnLoad,
-        updateBanner: updateBanner
-      }
+      detail: eventDetail
     }))
 
     this.currentUrl = this.urlValue
@@ -47,9 +80,9 @@ export default class extends Controller {
   handleSongChange(e) {
     // Only highlight if this is the current song
     if (e.detail.url === this.urlValue) {
-      this.playButtonTarget.classList.add("border-purple-500", "bg-purple-50")
+      this.playButtonTarget.classList.add("border-[#00B1D1]/30", "bg-[#00B1D1]/10")
     } else {
-      this.playButtonTarget.classList.remove("border-purple-500", "bg-purple-50")
+      this.playButtonTarget.classList.remove("border-[#00B1D1]/30", "bg-[#00B1D1]/10")
     }
   }
 }

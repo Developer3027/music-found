@@ -4,16 +4,26 @@ class MusicController < ApplicationController
   protect_from_forgery with: :exception, unless: -> { turbo_frame_request? && request.get? }
 
   def index
-    @songs = Song.all
+    @songs = Song.accessible_to_user(current_user).includes([ :artist, :genres ])
     @songs_data = @songs.map do |song|
       {
         id: song.id,
         url: song.song_file_url,
         title: song.title,
         artist: song.artist.name,
-        banner: song.artist.image_url
+        banner: song.artist.image_url,
+        bannerVideo: song.artist.banner_video_url
       }
     end.to_json
+
+    # Set default banner video for initial page load (use first song's artist if available)
+    first_song = @songs.first
+    @banner_video = first_song&.artist&.banner_video_url
+
+    # DEBUG: Log banner video setup
+    Rails.logger.debug "🎵 MUSIC CONTROLLER: First song: #{first_song&.title} by #{first_song&.artist&.name}"
+    Rails.logger.debug "🎵 MUSIC CONTROLLER: Banner video URL: #{@banner_video}"
+    Rails.logger.debug "🎵 MUSIC CONTROLLER: User animated banners enabled: #{current_user&.animated_banners_enabled?}"
   end
 
   def my_music
@@ -63,12 +73,12 @@ class MusicController < ApplicationController
 
   # app/controllers/music_controller.rb
   def genres
-    # Group songs by genre, including songs without a genre
+    # Group songs by genre, including songs without a genre, filtered by accessibility
     @grouped_genres = Genre.left_joins(:songs)
                            .where.not(songs: { id: nil })
                            .distinct
                            .sort_by(&:name)
-                           .map { |genre| [ genre, genre.songs.includes(:artist, :album).limit(20) ] }
+                           .map { |genre| [ genre, Song.accessible_to_user(current_user).joins(:song_genres).where(song_genres: { genre: genre }).includes(:artist, :album).limit(20) ] }
                            .to_h
 
     # For songs without a genre (if needed)
@@ -78,7 +88,7 @@ class MusicController < ApplicationController
   end
 
   def audio_player
-    @song = Song.find(params[:song_id])
+    @song = Song.accessible_to_user(current_user).find(params[:song_id])
     # respond_to do |format|
     #   format.turbo_stream do
     #     render turbo_stream: turbo_stream.replace("audio-player", partial: "music/audio_player", locals: { song: @song })

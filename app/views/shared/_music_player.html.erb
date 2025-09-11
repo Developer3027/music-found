@@ -2,9 +2,10 @@
 <div data-controller="music--player" class="flex flex-col w-full">
   <!-- Banner Section -->
   <!-- This partial will change the default banner image to the song's or playlist's image -->
-  <%= render "music/components/player/banner", 
-             banner_image: @banner_image, 
-             title: @banner_title, 
+  <%= render "music/components/player/banner",
+             banner_image: @banner_image,
+             banner_video: @banner_video,
+             title: @banner_title,
              subtitle: @banner_subtitle %>
 
   <div class="flex justify-center items-center bg-gray-900 text-white">

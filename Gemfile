@@ -56,6 +56,8 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+  # Reduce quires to the database.
+  gem "bullet"
 end
 
 group :test do
@@ -66,3 +68,5 @@ end
 
 gem "devise", "~> 4.9"
 gem "cancancan"
+
+gem "aws-sdk-s3", require: false

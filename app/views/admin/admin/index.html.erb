@@ -122,13 +122,15 @@
       <div class="space-y-3">
         <% @songs.limit(5).each do |song| %>
           <div class="flex items-center space-x-3 p-3 bg-zinc-700 rounded-md">
-            <%= image_tag song.song_image, class: "w-12 h-12 rounded object-cover" if song.song_image.attached? %>
+            <img class="w-12 h-12 rounded object-cover"
+              src="<%= song.song_image_url.present? ? song.song_image_url : (song.album&.cover_art_url.present? ? song.album.cover_art_url : song.artist.image_url) %>"
+              alt="<%= song.title %>" />
             <div class="flex-1">
               <p class="font-medium text-zinc-50"><%= song.title %></p>
               <p class="text-sm text-zinc-400">by <%= song.artist&.name || 'Unknown Artist' %></p>
             </div>
             <div class="flex space-x-2">
-              <%= render partial: "shared/preview", locals: { controller_name: "preview", song: song } if defined?(render) %>
+              <%= render partial: "shared/preview", locals: { song: song } if defined?(render) %>
             </div>
           </div>
         <% end %>

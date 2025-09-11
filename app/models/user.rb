@@ -8,6 +8,8 @@ class User < ApplicationRecord
   # Associations
   has_many :playlists, dependent: :destroy
   has_many :songs, dependent: :destroy
+  has_many :artists, dependent: :destroy
+  has_many :albums, dependent: :destroy
   has_one_attached :profile_image
 
   # Validations
@@ -75,6 +77,10 @@ class User < ApplicationRecord
       playlists_count: playlists.count,
       public_playlists_count: playlists.where(is_public: true).count
     }
+  end
+
+  def animated_banners_enabled?
+    enable_animated_banners || false
   end
 
   # Scopes for admin filtering

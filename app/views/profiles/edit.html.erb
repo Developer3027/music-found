@@ -73,6 +73,16 @@
           <%= form.date_field :date_of_birth, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
         </div>
 
+        <!-- Animated Banners Setting -->
+        <div class="space-y-2">
+          <%= form.label :enable_animated_banners, class: "block text-sm font-medium text-gray-700" %>
+          <div class="flex items-center space-x-3">
+            <%= form.check_box :enable_animated_banners, class: "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" %>
+            <span class="text-sm text-gray-600">Enable animated video banners when listening to music</span>
+          </div>
+          <p class="text-xs text-gray-500">Allow animated video banners to play during music playback (requires artists to upload banner videos)</p>
+        </div>
+
         <!-- Action Buttons -->
         <div class="flex justify-between pt-6 border-t">
           <%= link_to "Cancel", profile_path, class: "px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors" %>

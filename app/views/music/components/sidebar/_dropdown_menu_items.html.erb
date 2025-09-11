@@ -20,7 +20,7 @@
     
     <!-- User actions -->
     <li>
-      <%= link_to "Profile", profile_path, class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
+      <%= link_to "Profile", profile_path, data: { turbo_frame: "music-frame" }, class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
     </li>
     <li>
       <%= link_to "Add Playlist", "#", class: "block px-4 py-2 text-gray-800 hover:bg-[#FFC9A4]" %>
