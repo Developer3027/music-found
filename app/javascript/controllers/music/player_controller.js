@@ -77,16 +77,33 @@ export default class extends Controller {
       detail: { enabled: this.playOnLoadValue }
     }));
   
-    // 5. Queue listener remains important!
+    // 5. Queue listener with enhanced debugging
     document.addEventListener("player:queue:updated", (event) => {
+      console.log("🎵 PLAYER QUEUE DEBUG: Queue update received:", event.detail)
       
       // Improved queue update with validation
-      this.currentQueue = Array.isArray(event.detail.queue) ? event.detail.queue : [];
+      const newQueue = Array.isArray(event.detail.queue) ? event.detail.queue : []
+      console.log("🎵 PLAYER QUEUE DEBUG: New queue:", {
+        isArray: Array.isArray(newQueue),
+        length: newQueue.length,
+        firstItem: newQueue[0],
+        allTitles: newQueue.map(s => s?.title).filter(Boolean)
+      })
       
-      // More robust index finding
+      this.currentQueue = newQueue
+      
+      // More robust index finding with debugging
       this.currentIndex = this.currentQueue.findIndex(song => {
         return song?.url === this.currentUrl;
       });
+      
+      console.log("🎵 PLAYER QUEUE DEBUG: Updated queue state:", {
+        queueLength: this.currentQueue.length,
+        currentIndex: this.currentIndex,
+        currentUrl: this.currentUrl,
+        canPlayNext: this.currentIndex < this.currentQueue.length - 1,
+        canPlayPrev: this.currentIndex > 0
+      })
     });
   }
 
@@ -171,6 +188,10 @@ export default class extends Controller {
     document.addEventListener("player:play-on-load:changed", (event) => {
       this.playOnLoadValue = event.detail.enabled
     })
+    
+    // MOBILE FIX: Add mobile-specific event handling with delays for iOS
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    console.log("🎵 MOBILE FIX: Setting up mobile-optimized listeners, isMobile:", isMobile)
   
     // Add the queue update listener
     document.addEventListener("player:queue:updated", (event) => {
@@ -184,6 +205,49 @@ export default class extends Controller {
         }
       }
     });
+
+    // MOBILE FIX: Enhanced gesture event listeners with iOS compatibility
+    document.addEventListener("player:next:requested", (event) => {
+      console.log("🎵✋ PLAYER: Next track requested via", event.detail.source || 'unknown')
+      
+      // MOBILE FIX: Add slight delay for iOS event processing
+      if (isMobile) {
+        setTimeout(() => {
+          console.log("🎵 MOBILE FIX: Executing delayed playNext for mobile")
+          this.playNext()
+        }, 10)
+      } else {
+        this.playNext()
+      }
+    })
+
+    document.addEventListener("player:prev:requested", (event) => {
+      console.log("🎵✋ PLAYER: Previous track requested via", event.detail.source || 'unknown')
+      
+      // MOBILE FIX: Add slight delay for iOS event processing
+      if (isMobile) {
+        setTimeout(() => {
+          console.log("🎵 MOBILE FIX: Executing delayed playPrevious for mobile")
+          this.playPrevious()
+        }, 10)
+      } else {
+        this.playPrevious()
+      }
+    })
+
+    // Banner height toggle listener for gesture expand/minimize
+    document.addEventListener("banner:height:toggle:requested", (event) => {
+      if (event.detail.source === 'gesture') {
+        console.log("🎵✋ PLAYER: Banner height toggle requested via gesture:", event.detail.action)
+        // Forward to banner controller
+        document.dispatchEvent(new CustomEvent("banner:height:toggle", {
+          detail: {
+            action: event.detail.action,
+            source: 'gesture'
+          }
+        }))
+      }
+    })
   }
 
   // ========================
@@ -317,18 +381,44 @@ export default class extends Controller {
    * Play the next song in queue
    */
   playNext() {
-    if (this.currentQueue.length === 0) return
+    console.log("🎵 PLAYER DEBUG: playNext() called")
+    console.log("🎵 PLAYER DEBUG: currentQueue length:", this.currentQueue.length)
+    console.log("🎵 PLAYER DEBUG: currentIndex:", this.currentIndex)
+    
+    if (this.currentQueue.length === 0) {
+      console.log("🎵 PLAYER DEBUG: No queue available - cannot play next")
+      return
+    }
     
     this.currentIndex = (this.currentIndex + 1) % this.currentQueue.length
     const nextSong = this.currentQueue[this.currentIndex]
+    
+    console.log("🎵 PLAYER DEBUG: Playing next song:", {
+      index: this.currentIndex,
+      song: nextSong
+    })
+    
     this.playSongFromQueue(nextSong)
   }
 
   playPrevious() {
-    if (this.currentQueue.length === 0) return
+    console.log("🎵 PLAYER DEBUG: playPrevious() called")
+    console.log("🎵 PLAYER DEBUG: currentQueue length:", this.currentQueue.length)
+    console.log("🎵 PLAYER DEBUG: currentIndex:", this.currentIndex)
+    
+    if (this.currentQueue.length === 0) {
+      console.log("🎵 PLAYER DEBUG: No queue available - cannot play previous")
+      return
+    }
     
     this.currentIndex = (this.currentIndex - 1 + this.currentQueue.length) % this.currentQueue.length
     const prevSong = this.currentQueue[this.currentIndex]
+    
+    console.log("🎵 PLAYER DEBUG: Playing previous song:", {
+      index: this.currentIndex,
+      song: prevSong
+    })
+    
     this.playSongFromQueue(prevSong)
   }
 

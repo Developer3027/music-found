@@ -39,3 +39,8 @@ Typical for PostgreSQL. I set up host, username: (default for PG), password: (de
 
 * ...
 
+True Browser Fullscreen: Using Fullscreen API to hide browser chrome
+Mobile Gestures: Swipe left/right for next/previous tracks
+Media Session API: Lock screen controls and notification integration
+Landscape Mode Optimization: Different layouts for orientation changes
+PWA Features: Offline capabilities and app-like installation

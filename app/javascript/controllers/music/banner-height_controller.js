@@ -11,7 +11,8 @@ export default class extends Controller {
     const savedState = localStorage.getItem('bannerDynamicHeight')
     this.dynamicHeightValue = savedState !== null ? savedState === 'true' : false
     this.updateClass()
-    
+    this.updatePosition()
+
     // Initialize banner state
     this.dispatchState()
   }
@@ -30,7 +31,22 @@ export default class extends Controller {
 
   dynamicHeightValueChanged() {
     this.updateClass()
+    this.updatePosition()
     this.dispatchState()
+  }
+
+  updatePosition() {
+    if (this.dynamicHeightValue) {
+      // When expanded, position fixed at top right
+      this.element.style.position = 'fixed'
+      this.element.style.bottom = '8px'
+      this.element.style.right = '8px'
+    } else {
+      // When minimized, position absolute in music player
+      this.element.style.position = 'absolute'
+      this.element.style.top = '16px'
+      this.element.style.right = '16px'
+    }
   }
 
   updateClass() {

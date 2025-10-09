@@ -32,11 +32,12 @@
     will-change: opacity; /* Helps with performance */
   }
 
-  /* Add smooth height transition for the banner container */
+  /* Add smooth transitions for the banner container */
   [data-music--banner-target="container"] {
-    transition: height 0.5s ease-out;
-    will-change: height; /* Helps with performance during height changes */
+    transition: height 0.5s ease-out, position 0.5s ease-out, top 0.5s ease-out, bottom 0.5s ease-out, left 0.5s ease-out, right 0.5s ease-out;
+    will-change: height, position, top, bottom; /* Helps with performance during changes */
     min-height: 160px; /* Minimum height constraint */
+    transform-origin: bottom; /* Set origin for expansion animation */
   }
 
   /* Banner height toggle button styling */
@@ -44,6 +45,18 @@
     backdrop-filter: blur(8px);
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Ensure button maintains proper circular dimensions */
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    max-width: 40px;
+    max-height: 40px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   #banner-height-toggle:hover {
@@ -51,18 +64,83 @@
     border-color: rgba(255, 255, 255, 0.2);
   }
 
-  /* Ensure toggle button is properly positioned on all screen sizes */
+  /* MOBILE BANNER EXPANSION FIX: Improve touch targets on mobile */
   @media (max-width: 640px) {
     #banner-height-toggle {
       top: 8px;
       right: 8px;
-      padding: 6px;
+      /* LARGER touch target for easier mobile interaction */
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      max-width: 44px;
+      max-height: 44px;
+      padding: 0;
+      /* Enhanced visual feedback */
+      transform: scale(1);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    
+    #banner-height-toggle:active {
+      transform: scale(0.95);
+      background: rgba(0, 0, 0, 0.7);
     }
     
     #banner-height-toggle svg {
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
     }
+  }
+
+  /* MOBILE BANNER EXPANSION: Add expanded touch area around banner */
+  @media (max-width: 640px) {
+    [data-controller*="music--banner"] {
+      /* Ensure banner has minimum touch target for expansion */
+      min-height: 120px;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    /* Add invisible expanded touch area for banner gestures */
+    [data-controller*="music--banner"]::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      z-index: 1;
+      pointer-events: auto;
+    }
+    
+    /* Ensure banner elements don't interfere with touch */
+    [data-music--banner-target="overlay"] {
+      pointer-events: none;
+    }
+    
+    [data-music--banner-target="overlay"] > * {
+      pointer-events: auto;
+    }
+  }
+
+  /* GESTURE ZONE STYLING: Professional gesture area definition */
+  .gesture-zone {
+    /* Visual indicator that this area supports gestures */
+    position: relative;
+  }
+  
+  .gesture-zone::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    /* Subtle visual hint for gesture area - very light overlay */
+    background: linear-gradient(45deg, transparent 98%, rgba(1, 223, 182, 0.05) 100%);
+    border-radius: inherit;
   }
 
   /* app/assets/stylesheets/application.css */
@@ -189,5 +267,204 @@
   color: #fc5a58;
   background-color: #334155;
   border-color: #ebccd1;
+}
+
+/* ========================
+   Advanced Gesture Visual Feedback
+   ======================== */
+
+/* Base gesture feedback styling */
+.gesture-feedback {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  pointer-events: none;
+  z-index: 9999;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  scale: 0.8;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gesture-feedback.gesture-visible {
+  opacity: 1;
+  scale: 1;
+}
+
+.gesture-feedback.gesture-active {
+  animation: gestureActivePulse 0.6s ease-out;
+}
+
+@keyframes gestureActivePulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Specific gesture feedback types */
+.gesture-feedback-next,
+.gesture-feedback-previous {
+  background: linear-gradient(135deg, #00B1D1, #01DFB6);
+  animation: gestureSwipeEffect 0.8s ease-out;
+}
+
+@keyframes gestureSwipeEffect {
+  0% {
+    transform: translate(-50%, -50%) translateX(-30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) translateX(0);
+    opacity: 1;
+  }
+}
+
+.gesture-feedback-favorite {
+  background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+  animation: gestureFavoriteEffect 1s ease-out;
+}
+
+@keyframes gestureFavoriteEffect {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+.gesture-feedback-shuffle {
+  background: linear-gradient(135deg, #4ECDC4, #44A08D);
+  animation: gestureShuffleEffect 0.8s ease-out;
+}
+
+@keyframes gestureShuffleEffect {
+  0% {
+    transform: translate(-50%, -50%) rotate(-10deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.gesture-feedback-volume_adjust {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  width: 200px;
+  height: 8px;
+  padding: 0;
+  border-radius: 4px;
+  top: 30%;
+  overflow: hidden;
+}
+
+.gesture-feedback-volume_adjust::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #01DFB6, #00B1D1);
+  width: var(--volume-width, 50%);
+  transition: width 0.1s ease-out;
+  border-radius: 4px;
+}
+
+.gesture-feedback-volume_adjust::after {
+  content: attr(data-volume-text);
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.gesture-feedback-playlists,
+.gesture-feedback-settings {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  top: 20%;
+  animation: gestureEdgeEffect 0.6s ease-out;
+}
+
+@keyframes gestureEdgeEffect {
+  0% {
+    transform: translate(-50%, -50%) translateY(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Loading states for gesture actions */
+.gesture-loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  pointer-events: none;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+.gesture-loading.active {
+  opacity: 1;
+}
+
+.gesture-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(1, 223, 182, 0.3);
+  border-top: 3px solid #01DFB6;
+  border-radius: 50%;
+  animation: gestureLoadingSpin 1s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes gestureLoadingSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments for gestures */
+@media (max-width: 768px) {
+  .gesture-feedback {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+  
+  .gesture-feedback-volume_adjust {
+    width: 160px;
+    top: 25%;
+  }
 }
 

@@ -1,18 +1,14 @@
 <section class="bg-gray-50 text-gray-900 w-full min-h-screen" data-controller="sidebar" data-action="click@window->sidebar#closeMenu">
   <div class="flex w-full relative">
-    <!-- Mobile Menu Button -->
-    <button class="fixed top-4 left-4 z-50 md:hidden bg-white rounded-lg p-2 shadow-lg hover:shadow-md transition-shadow duration-200"
-            data-action="click->sidebar#toggleMobileMenu">
-      <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-      </svg>
-    </button>
+
+    <!-- Mobile Hamburger Menu -->
+    <%= render "music/components/player/mobile_hamburger_menu" %>
 
     <!-- Sidebar (responsive width) -->
     <%= render "music/components/sidebar/root" %>
 
     <!-- Main Content Area (flexible width with responsive margins) -->
-    <div class="bg-gray-50 relative flex flex-col h-screen flex-1 ml-0 md:ml-16 lg:ml-60 transition-all duration-300">
+    <div class="bg-gray-50 relative flex flex-col h-screen flex-1 ml-0 md:ml-16 lg:ml-70 transition-all duration-300 pb-64 md:pb-0">
       <!-- Music Player (fixed height) -->
       <div class="sticky top-0 z-20 bg-white shadow-sm">
         <%= render partial: "shared/music_player" %>

@@ -1,17 +1,19 @@
 <!-- Music Player -->
-<div data-controller="music--player" class="flex flex-col w-full">
+<div data-controller="music--player music--gesture"
+     data-music--gesture-player-zone-value="controls-safe"
+     class="flex flex-col w-full md:relative fixed bottom-0 left-0 right-0 z-50">
   <!-- Banner Section -->
-  <!-- This partial will change the default banner image to the song's or playlist's image -->
+  <!-- PROFESSIONAL FIX: Gesture controller on full player but with smart control prevention -->
   <%= render "music/components/player/banner",
              banner_image: @banner_image,
              banner_video: @banner_video,
              title: @banner_title,
              subtitle: @banner_subtitle %>
 
-  <div class="flex justify-center items-center bg-gray-900 text-white">
-    <div class="flex flex-col items-center">
+  <div class="flex justify-center items-center bg-gray-900 text-white" data-no-gesture>
+    <div class="flex flex-col items-center w-full">
       <%= render "music/components/player/time_display" do %>
-        <div class="flex flex-col w-[768px]">
+        <div class="flex flex-col w-full md:w-[768px]">
           <div data-music--player-target="waveform" class="mx-2 px-2"></div>
           <div class="h-1 bg-gray-700 relative rounded-full">
             <div data-music--player-target="loadingProgress"

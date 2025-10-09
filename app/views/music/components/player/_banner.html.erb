@@ -1,39 +1,27 @@
-<div class="relative w-full overflow-hidden"
+<div class="relative w-full overflow-hidden h-full md:h-auto"
     data-controller="music--banner"
     data-music--banner-target="container">
-  <!-- DEBUG: Animation Settings Check -->
-  <% Rails.logger.debug "🎥 BANNER DEBUG: User animated banners enabled: #{current_user&.animated_banners_enabled?}" %>
-  <% Rails.logger.debug "🎥 BANNER DEBUG: Banner video present: #{local_assigns[:banner_video].present?}" %>
-  <% Rails.logger.debug "🎥 BANNER DEBUG: Banner video value: #{local_assigns[:banner_video]}" %>
-  <% Rails.logger.debug "🎥 BANNER DEBUG: Should show video: #{current_user&.animated_banners_enabled? && local_assigns[:banner_video].present?}" %>
 
     <!-- Animated Banner Video -->
-    <% Rails.logger.info "🎥 BANNER: Rendering animated video banner for user #{current_user&.id}" %>
-    <video class="object-cover opacity-80"
+    <video class="w-full h-full object-cover opacity-80"
            autoplay
            muted
            loop
            playsinline
            data-music--banner-target="video">
       <source src="<%= banner_video %>" type="video/mp4">
-
     </video>
 
     <!-- Static Banner Image -->
-    <% Rails.logger.info "🎥 BANNER: Rendering static image banner (user: #{current_user&.id}, enabled: #{current_user&.animated_banners_enabled?}, video: #{local_assigns[:banner_video].present?})" %>
     <%= image_tag(
       banner_image || "/music_files/home-banner.jpg",
-      class: "object-cover opacity-80",
+      class: "w-full h-full object-cover opacity-80",
       alt: "Banner Image",
       data: { "music--banner-target": "image" }
     ) %>
 
-    
-    <!-- Banner Height Toggle -->
-    <%= render 'music/components/player/banner_height_toggle' %>
-    
     <!-- Overlay (positioned absolutely over image) -->
-    <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.5),transparent)] flex items-center p-6"
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.5),transparent)] flex items-center justify-start p-6"
      data-music--banner-target="overlay">
       <div>
         <h2 class="text-white text-3xl sm:text-4xl xl:text-5xl font-bold mb-2 drop-shadow-lg"
@@ -42,4 +30,7 @@
           data-music--banner-target="subtitle"><%= subtitle || "Discover your next favorite song" %></p>
       </div>
     </div>
+
+    <!-- Banner Height Toggle Button -->
+    <%= render 'music/components/player/banner_height_toggle' %>
   </div>

@@ -1,6 +1,7 @@
 # Music Found - Rails 8 Music Player Application
 
 ## 📋 Table of Contents
+
 1. [Project Overview](#project-overview)
 2. [Core Concept & MVP](#core-concept--mvp)
 3. [Technology Stack](#technology-stack)
@@ -9,10 +10,10 @@
 6. [Core Functionality](#core-functionality)
 7. [User Interface & Views](#user-interface--views)
 8. [Stimulus Controllers](#stimulus-controllers)
-9. [File Upload & Storage](#file-upload--storage)
-10. [Feature Status & Roadmap](#feature-status--roadmap)
-11. [Development Recommendations](#development-recommendations)
-
+9. [Advanced Gesture System](#advanced-gesture-system)
+10. [File Upload & Storage](#file-upload--storage)
+11. [Feature Status & Roadmap](#feature-status--roadmap)
+12. [Development Recommendations](#development-recommendations)
 ---
 
 ## 🎵 Project Overview
@@ -50,11 +51,10 @@ Music Found is a modern web-based music player that allows users to customize th
 - **Visual Customization**: Custom banners, images, and videos
 - **Admin Management**: Content moderation and user management
 
-#### 🚧 Advanced Features (Planned)
+#### 🚧 Advanced Features (Partially Implemented)
 - **EQ Settings**: Audio equalization per song
 - **Comments System**: User interaction on public music
 - **Streaming Integration**: Spotify, SoundCloud connectivity
-- **Mobile Experience**: Dedicated mobile player interface
 
 ---
 
@@ -68,10 +68,11 @@ Music Found is a modern web-based music player that allows users to customize th
 - **Background Jobs**: ActiveJob with custom S3DeleteJob
 
 ### Frontend
-- **JavaScript Framework**: Stimulus.js
-- **CSS Framework**: Tailwind CSS
-- **Audio Library**: WaveSurfer.js
+- **JavaScript Framework**: Stimulus.js with advanced gesture controllers
+- **CSS Framework**: Tailwind CSS with mobile-first responsive design
+- **Audio Library**: WaveSurfer.js with gesture conflict prevention
 - **Real-time Updates**: Turbo Streams & Turbo Frames
+- **Touch Interaction**: Custom gesture system with multi-touch support
 
 ### Infrastructure
 - **Storage**: AWS S3 (Primary) + Active Storage (Partial)
@@ -104,6 +105,15 @@ The application uses a sophisticated event system for component communication:
 - `player:state:changed` - Playback state updates
 - `audio:changed` - Track change notifications
 - `player:auto-advance:changed` - User preference updates
+- `banner:heightModeChanged` - Banner height toggle state changes
+- `gesture:touchstart` - Touch interaction begins
+- `gesture:swipe` - Swipe gesture completed
+- `gesture:tap` - Tap gesture completed
+- `music:gesture:next` - Next track gesture
+- `music:gesture:prev` - Previous track gesture
+- `music:gesture:toggle` - Play/pause gesture
+- `music:gesture:expand` - Player expand gesture
+- `music:gesture:minimize` - Player minimize gesture
 
 **Benefits:**
 - Loose coupling between components
@@ -277,11 +287,21 @@ Genre
 - **Progress Tracking**: Time display, loading indicators
 - **Queue Management**: Song queue with position tracking
 
+#### Mobile-Specific Features
+- **Mobile Hamburger Menu**: Full-screen overlay navigation with touch-friendly controls
+- **Mobile Player Components**: Dedicated mobile player UI elements with responsive design
+- **Touch-Optimized Controls**: Mobile-friendly playback controls with gesture support
+- **Responsive Banner System**: Dynamic banner height toggle with mobile-specific positioning
+- **Advanced Gesture System**: Swipe, pinch, and tap gestures for music control
+- **Gesture-Based Navigation**: Touch gestures for track navigation and player control
+
 #### Banner System
 - **Dynamic Content**: Images and videos based on current track
-- **User Preferences**: Animated banner toggle
+- **User Preferences**: Animated banner toggle with localStorage persistence
 - **Responsive Design**: Height adjustment, aspect ratio handling
-- **Smooth Transitions**: Fade effects between banner changes
+- **Mobile Enhancements**: Touch-friendly banner controls and mobile-specific toggles
+- **Dynamic Height Toggle**: Expandable/minimizable banner with smooth transitions
+- **Smooth Transitions**: Fade effects between banner changes and height adjustments
 
 ### User Management
 
@@ -433,10 +453,12 @@ export default class extends Controller {
 - **Active State Management**: Visual feedback for current section
 
 ### Responsive Design Features
-- **Mobile-First**: Optimized for mobile devices
-- **Breakpoint Handling**: Tailwind responsive utilities
-- **Touch Interactions**: Mobile-friendly controls
-- **Adaptive Layouts**: Sidebar collapse/expand
+- **Mobile-First**: Optimized for mobile devices with gesture-based interactions
+- **Breakpoint Handling**: Tailwind responsive utilities with adaptive thresholds
+- **Touch Interactions**: Advanced gesture system with swipe, pinch, and tap support
+- **Adaptive Layouts**: Dynamic sidebar collapse/expand with full-screen mobile navigation
+- **Mobile Player Enhancements**: Dedicated mobile player components, touch-friendly banner toggles, and responsive player layout
+- **Gesture-Optimized UI**: Waveform-safe zones and conflict prevention for seamless touch interactions
 
 ---
 
@@ -514,12 +536,72 @@ handleLoadingProgress(progress)
 - Seek functionality
 - Time formatting and display
 
+#### Mobile Hamburger Controller
+- Full-screen mobile navigation menu
+- Touch-friendly hamburger button with icon transitions
+- Backdrop overlay with click-to-close functionality
+- Keyboard support (Escape key)
+- Responsive design for mobile devices
+
+#### Banner Height Controller
+- Dynamic banner expansion/minimization
+- localStorage persistence for user preferences
+- Smooth transitions and positioning adjustments
+- Event-based communication with other controllers
+
+#### Gesture Controllers
+- **Base Gesture Controller**: Core touch event handling and gesture recognition
+- **Music Gesture Controller**: Music-specific gesture mappings and advanced interactions
+- WaveSurfer conflict prevention system
+- Multi-touch support with pinch, swipe, and tap gestures
+- Visual feedback system with performance optimizations
+
 ### Controller Communication Flow
 ```
 User Interaction → Smart Image → Player Controller → Banner Controller
        ↓              ↓              ↓              ↓
    Song Selection → Event Dispatch → Audio Loading → Visual Updates
+
+Gesture Interaction → Gesture Controller → Music Gesture → Player/Banner
+       ↓                     ↓                ↓              ↓
+   Touch Events → Gesture Recognition → Action Mapping → State Updates
 ```
+
+---
+
+## 🎮 Advanced Gesture System
+
+### Overview
+The Music Found application includes a comprehensive touch gesture system designed specifically for mobile music player interactions. This system provides intuitive touch controls for music playback, navigation, and interface management.
+
+### Key Features
+- **Multi-touch Support**: Advanced gesture recognition with pinch, swipe, and tap detection
+- **WaveSurfer Integration**: Seamless conflict prevention with audio waveform interactions
+- **Visual Feedback**: Rich animations and feedback for all gesture actions
+- **Performance Optimized**: 60fps interactions with debounced actions and throttling
+- **Configurable Thresholds**: Adaptive sensitivity based on device characteristics
+
+### Available Gestures
+| Gesture | Action | Description |
+|---------|--------|-------------|
+| **Swipe Left** | Next Track | Navigate to next song in queue |
+| **Swipe Right** | Previous Track | Navigate to previous song in queue |
+| **Swipe Up** | Expand Player | Expand the player banner to full screen |
+| **Swipe Down** | Minimize Player | Minimize the player banner |
+| **Tap** | Play/Pause | Toggle playback state |
+| **Pinch In** | Volume Down | Decrease audio volume |
+| **Pinch Out** | Volume Up | Increase audio volume |
+| **Long Press** | Context Menu | Show context menu (if implemented) |
+
+### Documentation Reference
+For comprehensive technical details, implementation guides, and troubleshooting information, see: [`GESTURE_SYSTEM_DOCUMENTATION.md`](GESTURE_SYSTEM_DOCUMENTATION.md)
+
+This document provides:
+- Complete API reference for gesture controllers
+- Configuration options and customization guides
+- Performance monitoring and debugging tools
+- Browser compatibility information
+- Future roadmap and enhancement plans
 
 ---
 
@@ -651,6 +733,16 @@ export default class extends Controller {
 - [x] Mobile optimization
 - [x] Artist/genre browsing
 
+#### Mobile Player Features
+- [x] Mobile hamburger menu controller
+- [x] Mobile-specific player components
+- [x] Touch-friendly controls
+- [x] Mobile banner toggle functionality
+- [x] Responsive player layout
+- [x] Advanced gesture system (swipe, pinch, tap)
+- [x] Dynamic banner height toggle
+- [x] Full-screen mobile navigation menu
+
 #### Technical Features
 - [x] Event-driven architecture
 - [x] Stimulus controllers
@@ -663,6 +755,12 @@ export default class extends Controller {
 
 ### 🚧 Partially Implemented
 
+#### Mobile Player
+- [x] Mobile hamburger menu and navigation
+- [x] Mobile-specific player components
+- [x] Touch-friendly controls and banner toggles
+- [ ] Mobile fullscreen player (planned enhancement)
+
 #### File Upload System
 - [x] Admin S3 uploads (complete)
 - [x] User Active Storage (needs migration)
@@ -674,7 +772,6 @@ export default class extends Controller {
 - [ ] User comments on music
 - [ ] EQ settings and presets
 - [ ] Custom waveform themes
-- [ ] Mobile fullscreen player
 - [ ] Individual song pages
 - [ ] Bulk album uploads
 - [ ] Streaming service integration
@@ -734,11 +831,12 @@ export default class extends Controller {
 
 ### Technology Stack Summary
 - **Backend**: Ruby 3.3.7, Rails 8.0.1
-- **Frontend**: JavaScript ES6+, Stimulus.js, Tailwind CSS
+- **Frontend**: JavaScript ES6+, Stimulus.js with gesture controllers, Tailwind CSS
 - **Database**: PostgreSQL with optimized indexing
 - **Storage**: AWS S3 (primary), Active Storage (partial)
-- **Audio**: WaveSurfer.js for visualization and playback
+- **Audio**: WaveSurfer.js for visualization and playback with gesture integration
 - **Real-time**: Turbo Streams for dynamic updates
+- **Touch Interaction**: Custom gesture system with multi-touch support
 - **Authentication**: Devise with custom user/admin roles
 
 ---

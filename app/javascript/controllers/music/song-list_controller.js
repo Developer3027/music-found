@@ -18,11 +18,15 @@ export default class extends Controller {
       }
       
       // Filter valid songs
-      this.songsArray = parsed.filter(song => 
+      this.songsArray = parsed.filter(song =>
         song?.id && song?.url && song?.title
       )
       
+      console.log("🎵📋 QUEUE FIX: Song list initialized with", this.songsArray.length, "songs")
+      console.log("🎵📋 QUEUE FIX: Songs array:", this.songsArray)
+      
       this.updatePlayerQueue() // Initial update
+      this.setupEventListeners() // CRITICAL FIX: Call setupEventListeners!
       
     } catch (error) {
       console.error("Song list initialization failed:", error)
@@ -44,8 +48,14 @@ export default class extends Controller {
       console.error("Invalid songsArray - resetting")
       this.songsArray = []
     }
+    
+    console.log("🎵📋 QUEUE FIX: Updating player queue with", this.songsArray.length, "songs")
+    console.log("🎵📋 QUEUE FIX: Queue contents:", this.songsArray.map(s => s.title))
+    
     document.dispatchEvent(new CustomEvent("player:queue:updated", {
       detail: { queue: [...this.songsArray] } // Spread operator clones array
     }))
+    
+    console.log("🎵📋 QUEUE FIX: player:queue:updated event dispatched successfully")
   }
 }

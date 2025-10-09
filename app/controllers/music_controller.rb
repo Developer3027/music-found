@@ -4,7 +4,7 @@ class MusicController < ApplicationController
   protect_from_forgery with: :exception, unless: -> { turbo_frame_request? && request.get? }
 
   def index
-    @songs = Song.accessible_to_user(current_user).includes([ :artist, :genres ])
+    @songs = Song.accessible_to_user(current_user).includes([ :artist, :genres ]).order(created_at: :desc)
     @songs_data = @songs.map do |song|
       {
         id: song.id,
