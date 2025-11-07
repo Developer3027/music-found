@@ -1,3 +1,10 @@
+![Rails](https://img.shields.io/badge/rails-8.0.1-orange?logo=rubyonrails)
+![Ruby](https://img.shields.io/badge/ruby-3.3.7-red?logo=ruby)
+![Authentication](https://img.shields.io/badge/auth-devise-purple?logo=rubyonrails)
+![Status](https://img.shields.io/badge/Player-working-f46519?logo=rubyonrails)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Powered By](https://img.shields.io/badge/powered%20by-COFFEE-brown)
+
 # Music Found
 
 ## Original Concept
