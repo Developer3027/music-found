@@ -38,7 +38,8 @@ This has been a idea for some time that is finally getting some traction. I want
 - smart-image_controller.js: Image loading and fallback handling
 - sidebar_controller.js: Navigation state
 
-## Event-driven Communication: Custom DOM events coordinate between controllers:
+## Event-driven Communication: 
+**Custom DOM events coordinate between controllers:**
 
 - player:play-requested: Song selection
 - player:state:changed: Playback state updates
