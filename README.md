@@ -74,5 +74,5 @@ This has been a idea for some time that is finally getting some traction. I want
 ![player v3](./public/Screenshot%20from%202025-10-07%2017-50-31.png)
 
 ## Live image
-<video src="./public/move-for-me-live-image.mp4" height="300" autoplay muted loop></video>
+![Move For Me Live Image](./public/move-for-me-live-image.gif)
 
